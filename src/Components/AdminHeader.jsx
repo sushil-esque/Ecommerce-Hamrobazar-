@@ -7,9 +7,10 @@ import { useMutation } from "@tanstack/react-query";
 import { CiShoppingCart } from "react-icons/ci";
 import { FaMagnifyingGlass, FaSquarePlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
+import { SidebarTrigger } from "./ui/sidebar";
 
 // Example: Solid Icon
-function Header() {
+function AdminHeader() {
   const { isLoggedIn, clearToken , user, setUser} = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -25,10 +26,13 @@ function Header() {
     },
   });
   return (
-    <div className="flex flex-col justify-center py-3 fixed top-0 z-20 box-border w-full bg-white">
-      <div className="text-black text-lg bg-white  flex justify-between lg:mx-24 md:mx-4 sm:mx-4 items-center gap-1 sm:gap-2 box-border">
-        <div className="shrink-0">
-          {" "}
+    <div className="flex z-10 items-center py-3 fixed top-0  box-border border-solid border-b-[1px] w-full bg-white">
+      <div className="text-black text-lg  bg-white  flex justify-between  items-center gap-1 sm:gap-2 box-border">
+                            <SidebarTrigger />
+
+        <div className="">
+    {console.log(user) }
+
           <NavLink to="/">
             <picture>
               {/* Small screen logo */}
@@ -50,20 +54,9 @@ function Header() {
           />
           <FaMagnifyingGlass />
         </div>
-        <div className="bg-black px-3 py-2 text-white rounded-md sm:flex items-center gap-2 justify-center w-max shrink-0 hidden hover:text-black hover:bg-white transition-colors duration-1000 ease-in-out border-black border-[1.5px] cursor-pointer">
-          {/* <FontAwesomeIcon icon={faPlusSquare} className="text-2xl" /> */}
-          <FaSquarePlus className="text-2xl" />
-          <p className="text-xs font-[400]">Post for free</p>
-        </div>
+        
         <div className="border-r border-black border-[1.5px] h-7 sm:block hidden"></div>
-        {user && (
-          <div>
-            <CiShoppingCart
-              className="text-2xl cursor-pointer"
-              onClick={() => navigate("/cart")}
-            />
-          </div>
-        )}
+        
 
         {user ? (
           <button
@@ -79,18 +72,12 @@ function Header() {
           </button>
         ) : (
           <ul className="flex gap-6 items-center text-md ">
-            <NavLink to="login">
+            <NavLink to="/login">
               <li className="sm:block hidden hover:text-blue-500 transition-colors duration-300 ease-in-out">
                 Login
               </li>
             </NavLink>
-            <li className="lg:block hidden">
-              <NavLink to="signup">
-                <button className="border border-black px-2 py-1 text-black rounded-md  shrink-0 w-max hover:text-white hover:bg-black transition-colors duration-300 ease-in-out ">
-                  Sign Up
-                </button>
-              </NavLink>
-            </li>
+            
           </ul>
         )}
       </div>
@@ -98,4 +85,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default AdminHeader;

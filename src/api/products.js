@@ -6,5 +6,39 @@ async function getProducts(params = "") {
 async function getUserCart() {
   return await axiosWithAuth.get(BASE_URL + `carts/1`);
 }
+
+export async function getAllProducts() {
+  return await basicAxios.get("http://localhost:3000/api/products");
+}
+export async function addProduct(data) {
+  return await basicAxios({
+    url: "http://localhost:3000/api/products",
+    method: "POST",
+    data: data,
+    withCredentials: true,
+  });
+}
+export const getSingleProduct = async (id) => {
+  return await basicAxios({
+    url: `http://localhost:3000/api/products/${id}`,
+  });
+};
+export const deleteImage = async ({ productId, public_id }) => {
+  // axios.delete expects (url, config). When sending a request body with DELETE,
+  // pass it as `data` inside the config object.
+  const url = `http://localhost:3000/api/image/${productId}`;
+  return await basicAxios.delete(url, {
+    data: { public_id },
+    withCredentials: true,
+  });
+};
+export const editProduct = async ({ id, data }) => {
+  const url = `http://localhost:3000/api/products/${id}`;
+
+  return await basicAxios.put(url, data, {
+    withCredentials: true,
+  });
+};
+
 export { getUserCart };
 export { getProducts };

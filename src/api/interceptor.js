@@ -3,11 +3,11 @@ import axios from "axios";
 export const axiosWithAuth = axios.create();
 export const basicAxios = axios.create();
 
-axiosWithAuth.interceptors.request.use((config) => {
-  const token = "Bearer " + localStorage.getItem("token");
-  config.headers.Authorization = token;
-  return config;
-});
+// axiosWithAuth.interceptors.request.use((config) => {
+//   const token = "Bearer " + localStorage.getItem("token");
+//   config.headers.Authorization = token;
+//   return config;
+// });
 
 function axiosFulfilled(e) {
   return e.data;
@@ -20,8 +20,11 @@ function axiosRejected(e) {
     if (e.response.status === 500) {
       return Promise.reject(e.response.data);
     }
+       if (e.response.status === 409) {
+      return Promise.reject(e.response.data);
+    }
     if (e.response.status === 401 || e.response.status === 403) {
-      localStorage.removeItem("token");
+      // localStorage.removeItem("token");
       // location.reload();
       return Promise.reject(e.response.data);
     }

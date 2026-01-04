@@ -4,6 +4,8 @@ const tokenInit = localStorage.getItem("token");
 
 const useAuthStore = create((set) => ({
   
+  user : null,
+  setUser: (userData) => set(() => ({ user: userData })),
   token: tokenInit,
   isLoggedIn: isLoggedInInit,
   count: 1,

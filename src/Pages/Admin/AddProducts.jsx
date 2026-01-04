@@ -1,0 +1,588 @@
+import { getCategories } from "@/api/allCategory";
+import {
+  addProduct,
+  deleteImage,
+  editProduct,
+  getSingleProduct,
+} from "@/api/products";
+import Loader from "@/Components/Loader";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/Components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/Components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/Components/ui/select";
+import { Textarea } from "@/Components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { BiUndo } from "react-icons/bi";
+import { useParams } from "react-router-dom";
+import { z } from "zod";
+function AddProduct() {
+  const { id } = useParams();
+
+  const [mainPreview, setMainPreview] = useState();
+  const fileInputRef = useRef(null);
+  const imagesChangeRef = useRef([]);
+
+  const {
+    data: categories,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+    retry: 2,
+    onSuccess: (data) => {
+      console.log("Fetched categories:", data);
+    },
+  });
+  const createProductValidationSchema = z.object({
+    name: z.string().min(1, { message: "Product name is required" }).trim(),
+
+    price: z
+      .number()
+      .gt(0, { message: "Price must be a number greater than 0" }),
+
+    stock: z
+      .number()
+      .int()
+      .min(0, { message: "Stock must be an integer ≥ 0" })
+      .optional(),
+
+    description: z
+      .string()
+      .min(10, { message: "Description must be at least 10 characters" }),
+
+    category: z.string().min(1, { message: "Category is required" }),
+  });
+  const form = useForm({
+    resolver: zodResolver(createProductValidationSchema),
+    defaultValues: {
+      name: "",
+      price: 0,
+      stock: 0,
+      description: "",
+      category: "",
+      image: null,
+      images: [],
+    },
+  });
+  const queryClient = useQueryClient();
+  const { mutate: productMutate, isPending } = useMutation({
+    mutationFn: addProduct,
+    onSuccess: () => {
+      toast({
+        title: "Product added Successfully",
+        description: "The product has been added.",
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding product:", error);
+      toast({
+        title: "Error",
+        description: `${error.error}`,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleMainChange = (file) => {
+    if (!file) {
+      if (mainPreview) URL.revokeObjectURL(mainPreview.url);
+      setMainPreview(null);
+      form.setValue("image", null, { shouldValidate: true });
+      return;
+    }
+    if (mainPreview) {
+      try {
+        URL.revokeObjectURL(mainPreview.url);
+      } catch (e) {
+        console.error("Error revoking main image URL:", e);
+      }
+    }
+    const url = URL.createObjectURL(file);
+    setMainPreview({ file, url });
+    form.setValue("image", file, { shouldValidate: true });
+  };
+
+  const onSubmit = (data) => {
+    const values = form.getValues("images");
+    console.log(values);
+    const formData = new FormData();
+
+    formData.append("name", data.name);
+    formData.append("price", data.price);
+    formData.append("stock", data.stock);
+    formData.append("category", data.category);
+    formData.append("description", data.description);
+    if (mainPreview?.file) formData.append("image", mainPreview.file);
+
+    if (Array.isArray(images) && images.length > 0) {
+      images.forEach((image) => {
+        if (image?.file instanceof File) {
+          formData.append("images", image.file);
+        }
+      });
+    }
+    console.log(formData);
+    productMutate(formData);
+  };
+
+  const removeMainImage = () => handleMainChange(null);
+
+  const [images, setImages] = useState([]);
+  const changeImages = (file, index) => {
+    console.log(index);
+    const url = URL.createObjectURL(file);
+    setImages((prev) =>
+      prev.map((img, i) => {
+        if (i === index && img.url && img.file) {
+          URL.revokeObjectURL(img.url);
+        }
+        return i === index ? { ...img, url, file } : img;
+      })
+    );
+  };
+  const undoChange = (index) => {
+    setImages((prev) => {
+      const currentImage = prev[index];
+      // CASE 1: Image was newly added → remove it
+      {
+        if (currentImage?.url) {
+          URL.revokeObjectURL(currentImage.url);
+        }
+        return prev.filter((_, i) => i !== index);
+      }
+     
+    });
+  };
+  const handleImagesUpload = (file) => {
+    const url = URL.createObjectURL(file);
+    setImages((prev) => [...prev, { url, file }]);
+  };
+
+  if (isLoading) {
+    return <Loader />;
+  }
+  return (
+    <>
+      {console.log(images)}
+      {console.log(mainPreview)}
+      <form
+        className="w-full p-6 mt-[72px]"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <FieldGroup className="w-full ">
+          <div className="lg:flex flex-row gap-4 ">
+            <div className="w-full h-fit  lg:w-[55%] ">
+              <Card className=" mx-auto h-fit mb-4">
+                <CardHeader>
+                  <CardTitle>General</CardTitle>
+
+                  <CardDescription>Card Description</CardDescription>
+                </CardHeader>
+                <CardContent className="w-full overflow-hidden flex flex-col gap-2">
+                  <Controller
+                    control={form.control}
+                    name="name"
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor={field.name}>
+                          Name of the Product
+                        </FieldLabel>
+
+                        <Input
+                          {...field}
+                          id={field.name}
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid && (
+                          <FieldError>{fieldState.error.message}</FieldError>
+                        )}
+                      </Field>
+                    )}
+                  />
+                  <div className="grid grid-cols-2 gap-5">
+                    <Controller
+                      control={form.control}
+                      name="stock"
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor={field.name}>Stock</FieldLabel>
+
+                          <Input
+                            {...field}
+                            type="number"
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                            id={field.name}
+                            aria-invalid={fieldState.invalid}
+                          />
+                          {fieldState.invalid && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
+                        </Field>
+                      )}
+                    />
+                    <Controller
+                      control={form.control}
+                      name="price"
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel htmlFor={field.name}>Price</FieldLabel>
+
+                          <Input
+                            {...field}
+                            type="number"
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                            id={field.name}
+                            aria-invalid={fieldState.invalid}
+                          />
+                          {fieldState.invalid && (
+                            <FieldError>{fieldState.error.message}</FieldError>
+                          )}
+                        </Field>
+                      )}
+                    />
+                  </div>
+
+                  <Controller
+                    control={form.control}
+                    name="description"
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldContent>
+                          <FieldLabel htmlFor={field.name}>
+                            Description
+                          </FieldLabel>
+                          <FieldDescription>
+                            Describe the product
+                          </FieldDescription>
+                        </FieldContent>
+                        <Textarea
+                          {...field}
+                          id={field.name}
+                          aria-invalid={fieldState.invalid}
+                        />
+                        {fieldState.invalid && (
+                          <FieldError>{fieldState.error.message}</FieldError>
+                        )}
+                      </Field>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+              <Card className=" mx-auto mb-4">
+                <CardHeader>
+                  <CardTitle>Product details</CardTitle>
+                </CardHeader>
+                <CardContent className="w-full overflow-hidden">
+                  <Controller
+                    control={form.control}
+                    name="category"
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel htmlFor={field.name}>Category</FieldLabel>
+
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger onBlur={field.onBlur} id={field.name}>
+                            <SelectValue placeholder="Category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categories?.map((category) => (
+                              <SelectItem
+                                key={category._id}
+                                value={category._id}
+                              >
+                                {category.name}
+                              </SelectItem>
+                            ))}{" "}
+                          </SelectContent>
+                        </Select>
+                        {fieldState.invalid && (
+                          <FieldError>{fieldState.error.message}</FieldError>
+                        )}
+                      </Field>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className=" mx-auto w-full lg:w-[45%]  mb-10">
+              <CardHeader>
+                <CardTitle>Media</CardTitle>
+
+                <CardDescription></CardDescription>
+              </CardHeader>
+              <CardContent className="w-full flex gap-2 flex-col overflow-hidden">
+                <div>
+                  <p className="mb-2 text-sm">Main image</p>
+
+                  {mainPreview ? (
+                    <>
+                      <div className="w-[200px] h-[200px] relative border rounded overflow-hidden bg-[#f8f8f8] p-6">
+                        <img
+                          src={mainPreview.url}
+                          className="object-cover w-full h-full"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeMainImage()}
+                          className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
+                        >
+                          {" "}
+                          <BiUndo />
+                        </button>
+                        <span className="flex justify-center mt-[3px]">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              fileInputRef.current?.click();
+                            }}
+                            className="text-blue-700 font-semibold text-xs"
+                          >
+                            Change
+                          </button>
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="mt-2 h-[150px] w-[140px] flex justify-center rounded-lg border-2 border-dashed border-gray-500/60 px-6 py-10">
+                      <div className="text-center">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          data-slot="icon"
+                          aria-hidden="true"
+                          className="mx-auto size-7 text-gray-600"
+                        >
+                          <path
+                            d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                            clipRule="evenodd"
+                            fillRule="evenodd"
+                          />
+                        </svg>
+                        <div className="mt-4 flex text-sm/6 text-gray-400">
+                          <label className="relative cursor-pointer rounded-md bg-transparent font-semibold text-indigo-400 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-300">
+                            <span>Upload a file</span>
+                            <input
+                              id="file-upload"
+                              type="file"
+                              name="file-upload"
+                              className="sr-only"
+                              onChange={(e) => {
+                                handleMainChange(e.target.files[0]);
+                              }}
+                            />
+                          </label>
+                        </div>
+                        <p className="text-xs/5 text-gray-400">
+                          PNG, JPG, GIF up to 10MB
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <p className="mb-2 text-sm">Additional Images</p>
+
+                  <div className="flex">
+                    <div className="flex gap-3 flex-wrap">
+                      {images.map((img, index) => (
+                        <div
+                          key={index}
+                          className="w-[140px] h-[150px] relative border rounded  bg-[#f8f8f8] p-6"
+                        >
+                          <img
+                            src={img.url}
+                            className="object-cover w-full h-full"
+                          />
+                          {img.file ? (
+                            <button
+                              type="button"
+                              onClick={() => undoChange(index)}
+                              className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
+                            >
+                              <BiUndo />
+                            </button>
+                          ) : (
+                            // <button
+                            //   type="button"
+                            //   onClick={() =>
+                            //     ImageDeletion({
+                            //       productId: id,
+                            //       public_id: img.public_id,
+                            //     })
+                            //   }
+                            //   className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
+                            // >
+                            //   ×
+                            // </button>
+                            <AlertDialog>
+                              <AlertDialogTrigger className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  ">
+                                ×
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete the image from our
+                                    servers.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() =>
+                                      ImageDeletion({
+                                        productId: id,
+                                        public_id: img.public_id,
+                                      })
+                                    }
+                                  >
+                                    Continue
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
+
+                          <Input
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={(e) =>
+                              changeImages(e.target.files[0], index)
+                            }
+                            id="images"
+                            ref={(el) => (imagesChangeRef.current[index] = el)}
+                          />
+                        </div>
+                      ))}
+                      {images.length < 3 &&
+                        Array.from({ length: 3 - images.length }).map(
+                          (_, index) => (
+                            <div className="" key={index}>
+                              <div className="mt-2 h-[150px] w-[140px] flex justify-center rounded-lg border-2 border-dashed border-gray-500/60 px-6 py-10">
+                                <div className="text-center">
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    data-slot="icon"
+                                    aria-hidden="true"
+                                    className="mx-auto size-7 text-gray-600"
+                                  >
+                                    <path
+                                      d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                      clipRule="evenodd"
+                                      fillRule="evenodd"
+                                    />
+                                  </svg>
+                                  <div className="mt-4 flex text-sm/6 text-gray-400">
+                                    <label className="relative cursor-pointer rounded-md bg-transparent font-semibold text-indigo-400 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-300">
+                                      <span>Upload a file</span>
+                                      <input
+                                        id="file-upload"
+                                        type="file"
+                                        name="file-upload"
+                                        className="sr-only"
+                                        onChange={(e) => {
+                                          handleImagesUpload(e.target.files[0]);
+                                        }}
+                                      />
+                                    </label>
+                                  </div>
+                                  <p className="text-xs/5 text-gray-400">
+                                    PNG, JPG, GIF up to 10MB
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )
+                        )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </FieldGroup>
+        <div className="flex items-center">
+          <Button
+            type="submit"
+            className={"w-[100px] mb-4 mr-4"}
+            disabled={isPending}
+            onClick={form.handleSubmit(onSubmit)}
+          >
+            Save changes
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            className={"w-[100px] mb-4 mr-4"}
+            onClick={() => {
+              form.reset({
+                name: "",
+                price: "",
+                stock: "",
+                description: "",
+                category: "",
+                image: null,
+                images: [],
+              });
+              setImages([]);
+              setMainPreview(null);
+            }}
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </>
+  );
+}
+
+export default AddProduct;

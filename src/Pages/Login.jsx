@@ -1,11 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { loginFakeStore } from "../api/login";
+import { login, loginFakeStore } from "../api/login";
 import { Link, Navigate, NavLink, useNavigate } from "react-router-dom";
 import useAuthStore from "@/store/useAuthStore";
 import { useToast } from "@/hooks/use-toast";
 function Login() {
   const{setToken} = useAuthStore();
+  const{setUser} = useAuthStore();
 
   const {
     register,
@@ -16,21 +17,26 @@ function Login() {
   const { toast } = useToast()
   const queryClient = useQueryClient();
   const { mutate: loginMutate, isPending } = useMutation({
-    mutationFn: loginFakeStore,
+    mutationFn: login,
     onError: (err) => {
       console.log(err);
       toast({
         title: "Login Failed",
         description: "Invalid Credentials",
         variant: "destructive",
+        position: "top-right",
       })
     },
 
     onSuccess: (data) => {
       console.log(data);
+      setUser(data.user);
       // localStorage.setItem("token", data.token);
-      setToken(data.token); 
+      // setToken(data.token); 
+      if(data.user.role==="user")
       navigate("/");
+      else if(data.user.role==="admin")
+      navigate("/AdminDashboard");
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast({
         title: "Login Successfull",
@@ -40,7 +46,7 @@ function Login() {
   });
   const onSubmit = (data) => {
     const cusData = {
-      username: data.username,
+      email: data.email,
       password: data.password,
     };
     loginMutate(cusData);
@@ -59,18 +65,18 @@ function Login() {
               <label
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                Your username
+                Your email
               </label>
               <input
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required=""
-                {...register("username", {
-                  required: { message: "Username is required", value: true },
+                {...register("email", {
+                  required: { message: "Email is required", value: true },
                 
                 })}
               />
               {errors.username && (
-                <span className="text-red-600">{errors.username.message}</span>
+                <span className="text-red-600">{errors.email.message}</span>
               )}
             </div>
             <div>

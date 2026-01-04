@@ -4,10 +4,8 @@ import Routes from "./Routes/Routes";
 function App() {
   return (
     <>
-         <Toaster />
-        <Routes />
-       
-        
+      <Toaster />
+      <Routes />
     </>
   );
 }

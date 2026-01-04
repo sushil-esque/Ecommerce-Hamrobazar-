@@ -1,4 +1,4 @@
-import { registerFakeStore } from "@/api/login";
+import {  registerUser } from "@/api/login";
 import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
@@ -15,8 +15,9 @@ function SignUp() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
   const { mutate: registerMutate, isPending } = useMutation({
-    mutationFn: registerFakeStore,
+    mutationFn: registerUser,
     onError: (err) => {
       console.log(err);
       toast({
@@ -26,20 +27,21 @@ function SignUp() {
     },
     onSuccess: (data) => {
       console.log(data);
-      setToken(data.token);
-      navigate("/");
+      // setToken(data.token);
+      navigate("/login");
       toast({
         title: "Registration Successfull",
-        description: "Welcome to Fake Store",
+        description: "You can now login to your account",
       });
     },
   });
   const onSubmit = (data) => {
     const cusData = {
-      username: data.username,
+      // username: data.username,
       email: data.email,
       password: data.password,
     };
+    console.log(cusData);
     registerMutate(cusData);
   };
   return (
@@ -50,11 +52,12 @@ function SignUp() {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Create an account
             </h1>
-            <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <div>
-                <label
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
+            <form
+              className="space-y-4 md:space-y-6"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              {/* <div>
+                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Create a username
                 </label>
                 <input
@@ -62,13 +65,14 @@ function SignUp() {
                   required=""
                   {...register("username", {
                     required: { message: "Username is required", value: true },
-                   
                   })}
                 />
                 {errors.email && (
-                  <span className="text-red-600">{errors.username.message}</span>
+                  <span className="text-red-600">
+                    {errors.username.message}
+                  </span>
                 )}
-              </div>
+              </div> */}
 
               <div>
                 <label

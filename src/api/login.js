@@ -15,5 +15,33 @@ async function registerFakeStore(data) {
     data: data,
   });
 }
+
+async function registerUser(data) {
+  return await basicAxios({
+    url: "http://localhost:3000/api/signup",
+    method: "POST",
+    data: data,
+  });
+}
+
+async function login(data) {
+  return await basicAxios({
+    url: "http://localhost:3000/api/login",
+    method: "POST",
+    data: data,
+    withCredentials: true,
+  });
+}
+export async function logout(data) {
+  return await basicAxios({
+    url: "http://localhost:3000/api/logout",
+    method: "POST",
+    data: data,
+    withCredentials: true,
+  });
+}
+export { login };
+export { registerUser };
+
 export { registerFakeStore };
 export { loginFakeStore };
