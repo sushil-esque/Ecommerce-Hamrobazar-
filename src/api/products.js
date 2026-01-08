@@ -7,12 +7,14 @@ async function getUserCart() {
   return await axiosWithAuth.get(BASE_URL + `carts/1`);
 }
 
-export async function getAllProducts() {
-  return await basicAxios.get("http://localhost:3000/api/products");
+export async function getAllProducts({ page = 1, limit = 10 }) {
+  return await basicAxios.get(
+   BASE_URL+  `products?page=${page}&&limit=${limit}`
+  );
 }
 export async function addProduct(data) {
   return await basicAxios({
-    url: "http://localhost:3000/api/products",
+    url: BASE_URL+ "products",
     method: "POST",
     data: data,
     withCredentials: true,
@@ -20,25 +22,37 @@ export async function addProduct(data) {
 }
 export const getSingleProduct = async (id) => {
   return await basicAxios({
-    url: `http://localhost:3000/api/products/${id}`,
+    url:  BASE_URL+`products/${id}`,
   });
 };
 export const deleteImage = async ({ productId, public_id }) => {
   // axios.delete expects (url, config). When sending a request body with DELETE,
   // pass it as `data` inside the config object.
-  const url = `http://localhost:3000/api/image/${productId}`;
+  const url = BASE_URL+ `image/${productId}`;
   return await basicAxios.delete(url, {
     data: { public_id },
     withCredentials: true,
   });
 };
 export const editProduct = async ({ id, data }) => {
-  const url = `http://localhost:3000/api/products/${id}`;
+  const url = BASE_URL+ `products/${id}`;
 
   return await basicAxios.put(url, data, {
     withCredentials: true,
   });
 };
+export const deleteProduct = async (productId) => {
+  // axios.delete expects (url, config). When sending a request body with DELETE,
+  // pass it as `data` inside the config object.
+  const url = BASE_URL+`products/${productId}`;
+  return await basicAxios.delete(url, {
+    withCredentials: true,
+  });
+};
+
+export const getCategoryWiseProducts = async(categorySlug)=>{
+  return await basicAxios.get(BASE_URL + `categorywiseProducts/${categorySlug}`)
+}
 
 export { getUserCart };
 export { getProducts };

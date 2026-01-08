@@ -1,9 +1,5 @@
 import { getCategories } from "@/api/allCategory";
-import {
-  deleteImage,
-  editProduct,
-  getSingleProduct
-} from "@/api/products";
+import { deleteImage, editProduct, getSingleProduct } from "@/api/products";
 import Loader from "@/Components/Loader";
 import {
   AlertDialog,
@@ -22,7 +18,7 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import {
   Field,
@@ -41,7 +37,6 @@ import {
   SelectValue,
 } from "@/Components/ui/select";
 import { Textarea } from "@/Components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -49,6 +44,9 @@ import { Controller, useForm } from "react-hook-form";
 import { BiUndo } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
+import { toast } from "sonner";
+import { Spinner } from "@/Components/ui/spinner";
+
 function EditProduct() {
   const { id } = useParams();
   const { data: product, isLoading: productLoading } = useQuery({
@@ -114,18 +112,11 @@ function EditProduct() {
     mutationFn: editProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product", id] });
-      toast({
-        title: "Product Updated Successfully",
-        description: "The product has been updated.",
-      });
+      toast.success("Product updated successfully");
     },
     onError: (error) => {
       console.error("Error updating product:", error);
-      toast({
-        title: "Error",
-        description: "There was an error adding the product.",
-        variant: "destructive",
-      });
+      toast.error(error.error || "There was an error updating the product.  ");
     },
   });
 
@@ -133,18 +124,11 @@ function EditProduct() {
     mutationFn: deleteImage,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product", id] });
-      toast({
-        title: "Image deleted Successfully",
-        description: "The product has been added.",
-      });
+      toast.success("Image deleted successfully");
     },
     onError: (error) => {
       console.error("Error deleting:", error);
-      toast({
-        title: "Error",
-        description: "There was an error deleting the image.",
-        variant: "destructive",
-      });
+      toast.error(error.error || "There was an error deleting the image.");
     },
   });
   const handleMainChange = (file) => {
@@ -165,7 +149,6 @@ function EditProduct() {
     setMainPreview({ file, url });
     form.setValue("image", file, { shouldValidate: true });
   };
-
 
   const onSubmit = (data) => {
     const values = form.getValues("image");
@@ -367,7 +350,6 @@ function EditProduct() {
                     )}
                   />
                 </CardContent>
-                
               </Card>
               <Card className=" mx-auto mb-4">
                 <CardHeader>
@@ -389,7 +371,7 @@ function EditProduct() {
                             <SelectValue placeholder="Category" />
                           </SelectTrigger>
                           <SelectContent>
-                            {categories?.map((category) => (
+                            {categories?.data?.map((category) => (
                               <SelectItem
                                 key={category._id}
                                 value={category._id}
@@ -485,137 +467,127 @@ function EditProduct() {
                 <div>
                   <p className="mb-2 text-sm">Additional Images</p>
 
-                 
-                 
-                    <div className="flex">
-                      <div className="flex gap-3 flex-wrap">
-                        {images.map((img, index) => (
-                          <div
-                            key={index}
-                            className="w-[140px] h-[150px] relative border rounded  bg-[#f8f8f8] p-6"
-                          >
-                            <img
-                              src={img.url}
-                              className="object-cover w-full h-full"
-                            />
-                            {img.file ? (
-                              <button
-                                type="button"
-                                onClick={() => undoChange(index)}
-                                className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
-                              >
-                                <BiUndo />
-                              </button>
-                            ) : (
-                              // <button
-                              //   type="button"
-                              //   onClick={() =>
-                              //     ImageDeletion({
-                              //       productId: id,
-                              //       public_id: img.public_id,
-                              //     })
-                              //   }
-                              //   className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
-                              // >
-                              //   ×
-                              // </button>
-                              <AlertDialog>
-                                <AlertDialogTrigger className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  ">
-                                  ×
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Are you absolutely sure?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      This action cannot be undone. This will
-                                      permanently delete the image from our
-                                      servers.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() =>
-                                        ImageDeletion({
-                                          productId: id,
-                                          public_id: img.public_id,
-                                        })
-                                      }
-                                    >
-                                      Continue
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            )}
-                           
-                            <Input
-                              type="file"
-                              className="hidden"
-                              accept="image/*"
-                              onChange={(e) =>
-                                changeImages(e.target.files[0], index)
-                              }
-                              id="images"
-                              ref={(el) =>
-                                (imagesChangeRef.current[index] = el)
-                              }
-                            />
-                          </div>
-                        ))}
-                        {images.length < 3 &&
-                          Array.from({ length: 3 - images.length }).map(
-                            (_, index) => (
-                              <div className="" key={index}>
-                                <div className="mt-2 h-[150px] w-[140px] flex justify-center rounded-lg border-2 border-dashed border-gray-500/60 px-6 py-10">
-                                  <div className="text-center">
-                                    <svg
-                                      viewBox="0 0 24 24"
-                                      fill="currentColor"
-                                      data-slot="icon"
-                                      aria-hidden="true"
-                                      className="mx-auto size-7 text-gray-600"
-                                    >
-                                      <path
-                                        d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
-                                        clipRule="evenodd"
-                                        fillRule="evenodd"
+                  <div className="flex">
+                    <div className="flex gap-3 flex-wrap">
+                      {images.map((img, index) => (
+                        <div
+                          key={index}
+                          className="w-[140px] h-[150px] relative border rounded  bg-[#f8f8f8] p-6"
+                        >
+                          <img
+                            src={img.url}
+                            className="object-cover w-full h-full"
+                          />
+                          {img.file ? (
+                            <button
+                              type="button"
+                              onClick={() => undoChange(index)}
+                              className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
+                            >
+                              <BiUndo />
+                            </button>
+                          ) : (
+                            // <button
+                            //   type="button"
+                            //   onClick={() =>
+                            //     ImageDeletion({
+                            //       productId: id,
+                            //       public_id: img.public_id,
+                            //     })
+                            //   }
+                            //   className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
+                            // >
+                            //   ×
+                            // </button>
+                            <AlertDialog>
+                              <AlertDialogTrigger className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  ">
+                                ×
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Are you absolutely sure?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete the image from our
+                                    servers.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() =>
+                                      ImageDeletion({
+                                        productId: id,
+                                        public_id: img.public_id,
+                                      })
+                                    }
+                                  >
+                                    Continue
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
+
+                          <Input
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={(e) =>
+                              changeImages(e.target.files[0], index)
+                            }
+                            id="images"
+                            ref={(el) => (imagesChangeRef.current[index] = el)}
+                          />
+                        </div>
+                      ))}
+                      {images.length < 3 &&
+                        Array.from({ length: 3 - images.length }).map(
+                          (_, index) => (
+                            <div className="" key={index}>
+                              <div className="mt-2 h-[150px] w-[140px] flex justify-center rounded-lg border-2 border-dashed border-gray-500/60 px-6 py-10">
+                                <div className="text-center">
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    data-slot="icon"
+                                    aria-hidden="true"
+                                    className="mx-auto size-7 text-gray-600"
+                                  >
+                                    <path
+                                      d="M1.5 6a2.25 2.25 0 0 1 2.25-2.25h16.5A2.25 2.25 0 0 1 22.5 6v12a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 18V6ZM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0 0 21 18v-1.94l-2.69-2.689a1.5 1.5 0 0 0-2.12 0l-.88.879.97.97a.75.75 0 1 1-1.06 1.06l-5.16-5.159a1.5 1.5 0 0 0-2.12 0L3 16.061Zm10.125-7.81a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Z"
+                                      clipRule="evenodd"
+                                      fillRule="evenodd"
+                                    />
+                                  </svg>
+                                  <div className="mt-4 flex text-sm/6 text-gray-400">
+                                    <label className="relative cursor-pointer rounded-md bg-transparent font-semibold text-indigo-400 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-300">
+                                      <span>Upload a file</span>
+                                      <input
+                                        id="file-upload"
+                                        type="file"
+                                        name="file-upload"
+                                        className="sr-only"
+                                        onChange={(e) => {
+                                          handleImagesUpload(e.target.files[0]);
+                                        }}
                                       />
-                                    </svg>
-                                    <div className="mt-4 flex text-sm/6 text-gray-400">
-                                      <label className="relative cursor-pointer rounded-md bg-transparent font-semibold text-indigo-400 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-indigo-500 hover:text-indigo-300">
-                                        <span>Upload a file</span>
-                                        <input
-                                          id="file-upload"
-                                          type="file"
-                                          name="file-upload"
-                                          className="sr-only"
-                                          onChange={(e) => {
-                                            handleImagesUpload(
-                                              e.target.files[0]
-                                            );
-                                          }}
-                                        />
-                                      </label>
-                                    </div>
-                                    <p className="text-xs/5 text-gray-400">
-                                      PNG, JPG, GIF up to 10MB
-                                    </p>
+                                    </label>
                                   </div>
+                                  <p className="text-xs/5 text-gray-400">
+                                    PNG, JPG, GIF up to 10MB
+                                  </p>
                                 </div>
                               </div>
-                            )
-                          )}
-                      </div>
+                            </div>
+                          )
+                        )}
                     </div>
-                  
+                  </div>
                 </div>
               </CardContent>
-             
             </Card>
           </div>
 
@@ -659,11 +631,13 @@ function EditProduct() {
             disabled={isPending}
             onClick={form.handleSubmit(onSubmit)}
           >
-            Save changes
+            {isPending ? <span className="flex gap-2"><Spinner/> Saving...</span> :"Save changes"}
+            
           </Button>
           <Button
             type="button"
             variant="destructive"
+            disabled={isPending}
             className={"w-[100px] mb-4 mr-4"}
             onClick={() => {
               form.reset({

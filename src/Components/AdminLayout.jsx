@@ -5,16 +5,15 @@ import AdminHeader from "./AdminHeader";
 
 function AdminLayout() {
   return (
-    <SidebarProvider className="min-h-screen">
+    <SidebarProvider>
       <AdminSidebar />
-      <div className="flex-1 flex flex-col w-full ">
-        <main className="flex-1 overflow-auto ">
-          <AdminHeader />
-          <div className="p-7">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        <AdminHeader />
+        <div className="p-7 overflow-y-auto flex-1">
+          <Outlet />
+        </div>
+      </main>
     </SidebarProvider>
   );
 }

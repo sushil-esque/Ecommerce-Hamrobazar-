@@ -41,15 +41,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/Components/ui/select";
+import { Spinner } from "@/Components/ui/spinner";
 import { Textarea } from "@/Components/ui/textarea";
-import { toast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { BiUndo } from "react-icons/bi";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 import { z } from "zod";
+import { is } from "zod/v4/locales";
 function AddProduct() {
   const { id } = useParams();
 
@@ -104,18 +106,15 @@ function AddProduct() {
   const { mutate: productMutate, isPending } = useMutation({
     mutationFn: addProduct,
     onSuccess: () => {
-      toast({
-        title: "Product added Successfully",
-        description: "The product has been added.",
-      });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      form.reset();
+      setImages([]);
+      setMainPreview(null);
+      toast.success("Product added successfully");
     },
     onError: (error) => {
       console.error("Error adding product:", error);
-      toast({
-        title: "Error",
-        description: `${error.error}`,
-        variant: "destructive",
-      });
+     toast.error(error.error || "There was an error adding the product.");
     },
   });
 
@@ -201,11 +200,22 @@ function AddProduct() {
     <>
       {console.log(images)}
       {console.log(mainPreview)}
-      <form
-        className="w-full p-6 mt-[72px]"
+    
+{/* {!isPending && (
+  <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 backdrop-blur-sm">
+    <div className="flex flex-col items-center gap-2 text-white">
+      <Spinner/>
+      <span className="text-sm">Saving...</span>
+    </div>
+  </div>
+)} */}
+      <form 
+        className=" w-full p-6 mt-[72px] relative"
         onSubmit={form.handleSubmit(onSubmit)}
       >
+          
         <FieldGroup className="w-full ">
+          
           <div className="lg:flex flex-row gap-4 ">
             <div className="w-full h-fit  lg:w-[55%] ">
               <Card className=" mx-auto h-fit mb-4">
@@ -328,7 +338,7 @@ function AddProduct() {
                             <SelectValue placeholder="Category" />
                           </SelectTrigger>
                           <SelectContent>
-                            {categories?.map((category) => (
+                            {categories?.data?.map((category) => (
                               <SelectItem
                                 key={category._id}
                                 value={category._id}
@@ -360,7 +370,7 @@ function AddProduct() {
 
                   {mainPreview ? (
                     <>
-                      <div className="w-[200px] h-[200px] relative border rounded overflow-hidden bg-[#f8f8f8] p-6">
+                      <div className="w-[140px] h-[150px] relative border rounded overflow-hidden bg-[#f8f8f8] p-6">
                         <img
                           src={mainPreview.url}
                           className="object-cover w-full h-full"
@@ -552,12 +562,12 @@ function AddProduct() {
         </FieldGroup>
         <div className="flex items-center">
           <Button
+            disabled={isPending}
             type="submit"
             className={"w-[100px] mb-4 mr-4"}
-            disabled={isPending}
             onClick={form.handleSubmit(onSubmit)}
-          >
-            Save changes
+          >{isPending ? <span className="flex gap-2"><Spinner/> Saving...</span> :"Save changes"}
+            
           </Button>
           <Button
             type="button"

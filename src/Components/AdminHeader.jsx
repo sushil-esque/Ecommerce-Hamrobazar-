@@ -11,12 +11,14 @@ import { SidebarTrigger } from "./ui/sidebar";
 
 // Example: Solid Icon
 function AdminHeader() {
-  const { isLoggedIn, clearToken , user, setUser} = useAuthStore();
+  const {  clearToken, user, setUser } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const {mutate: logoutMutate} = useMutation({
+  const { mutate: logoutMutate } = useMutation({
     mutationFn: logout,
-    onError: (err) => {console.log(err);},
+    onError: (err) => {
+      console.log(err);
+    },
     onSuccess: (data) => {
       console.log(data);
       setUser(null);
@@ -26,27 +28,30 @@ function AdminHeader() {
     },
   });
   return (
-    <div className="flex z-10 items-center py-3 fixed top-0  box-border border-solid border-b-[1px] w-full bg-white">
-      <div className="text-black text-lg  bg-white  flex justify-between  items-center gap-1 sm:gap-2 box-border">
-                            <SidebarTrigger />
+    <div className="flex z-10 items-center py-3 px-2 box-border border-solid border-b-[1px] bg-white">
+      <div className="text-black  text-lg w-full   bg-white  flex justify-between  items-center gap-1 sm:gap-2">
+        <div className="flex gap-4"> 
+          <SidebarTrigger />
 
-        <div className="">
-    {console.log(user) }
+          <div className="">
+            {console.log(user)}
 
-          <NavLink to="/">
-            <picture>
-              {/* Small screen logo */}
-              <source srcSet="hbsmall.png" media="(max-width: 640px)" />
-              {/* Default logo */}
-              <img
-                src="hamrobazarr.png"
-                alt="logo"
-                className="w-20 h-10 object-contain sm:w-48 sm:h-12"
-              />
-            </picture>
-          </NavLink>
+            <NavLink to="/">
+              <picture>
+                {/* Small screen logo */}
+                <source srcSet="hbsmall.png" media="(max-width: 640px)" />
+                {/* Default logo */}
+                <img
+                  src="hamrobazarr.png"
+                  alt="logo"
+                  className="w-20 h-10 object-contain sm:w-48 sm:h-12"
+                />
+              </picture>
+            </NavLink>
+          </div>
         </div>
-        <div className="border border-black rounded-md flex items-center px-6 lg:w-[37rem] md:w-[25rem] w-[20rem]  ">
+
+        <div className="border border-black rounded-md flex items-center px-6 max-w-[37rem]   ">
           <input
             type="search"
             className=" px-2 py-1 w-full outline-none"
@@ -54,9 +59,6 @@ function AdminHeader() {
           />
           <FaMagnifyingGlass />
         </div>
-        
-        <div className="border-r border-black border-[1.5px] h-7 sm:block hidden"></div>
-        
 
         {user ? (
           <button
@@ -66,7 +68,6 @@ function AdminHeader() {
             //   toast({ title: "Logout Successfull" });
             // }}
             onClick={() => logoutMutate()}
-            
           >
             Logout
           </button>
@@ -77,7 +78,6 @@ function AdminHeader() {
                 Login
               </li>
             </NavLink>
-            
           </ul>
         )}
       </div>

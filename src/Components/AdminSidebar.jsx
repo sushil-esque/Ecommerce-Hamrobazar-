@@ -29,8 +29,8 @@ function AdminSidebar() {
       icon: Calendar,
     },
     {
-      title: "Search",
-      url: "#",
+      title: "Categories",
+      url: "/AdminDashboard/Categories",
       icon: Search,
     },
     {

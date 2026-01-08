@@ -1,10 +1,11 @@
+import { Toaster } from "sonner";
 import "./App.css";
-import { Toaster } from "./Components/ui/toaster";
 import Routes from "./Routes/Routes";
 function App() {
   return (
     <>
-      <Toaster />
+   
+      <Toaster position="top-center" />
       <Routes />
     </>
   );

@@ -12,7 +12,7 @@ function Layout() {
 
     </div>
       <BottomNavBar/>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }
