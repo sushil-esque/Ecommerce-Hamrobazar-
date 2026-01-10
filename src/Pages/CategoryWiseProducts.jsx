@@ -1,13 +1,18 @@
 import ProductCardSkeleton from "@/Components/ProductCardSkeleton";
 import { Separator } from "@/components/ui/separator";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { CiBookmarkPlus, CiGrid2H } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
 import { TbCategory2 } from "react-icons/tb";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { getCategoryWiseProducts } from "../api/products";
 import { BsGrid } from "react-icons/bs";
+import LinearCard from "@/Components/LinearCard";
+import GridCard from "@/Components/GridCard";
+import { useInView } from "react-intersection-observer";
+import ProductCardSkeletonGrid from "@/Components/ProductCardSkeletonGrid";
+import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
 function CategoryWiseProducts() {
   // const { data, error, isLoading, isError } = useQuery({
   //   queryKey: ["products"],
@@ -16,6 +21,8 @@ function CategoryWiseProducts() {
   // });
   // console.log(data?.data);
   const { slug } = useParams();
+  const [searchParam] = useSearchParams();
+  const searchQuery = searchParam.get("query");
 
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
@@ -24,152 +31,123 @@ function CategoryWiseProducts() {
   };
   console.log(toggle);
   const [isGrid, setIsGrid] = useState(false);
+  const { setSearchPlaceHolder } = useSearchPlaceHolder();
 
   const {
     data: productsData,
-    isLoading: productsLoading,
-    isError: productsIsError,
-  } = useQuery({
-    queryKey: ["categorywiseProducts", slug],
-    queryFn: () => getCategoryWiseProducts(slug),
-    retry: 2,
+
+    fetchNextPage,
+    refetch,
+    hasNextPage,
+
+    isLoading,
+    isFetchingNextPage,
+
+    isLoadingError,
+    isFetchNextPageError,
+  } = useInfiniteQuery({
+    queryKey: ["CategoryWiseProducts", slug, searchQuery],
+    queryFn: ({ pageParam }) =>
+      getCategoryWiseProducts({ categorySlug: slug, pageParam, searchQuery }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage?.nextPage || undefined,
   });
+  console.log(productsData);
 
-  if (productsIsError) {
-    return <div>error....</div>;
-  }
+  const allProducts = productsData?.pages?.map((obj) => obj.data).flat();
+  console.log(allProducts);
+  const { ref, inView } = useInView();
+  console.log(inView);
 
-  const products = productsData?.data?.map((product, index) => (
-        <div key={product._id} className="">
-      <div className=" h-fit mx-0   flex">
-        <div className="border-2 w-full border-transparent rounded-2xl hover:bg-slate-100 hover:border-2 hover:border-blue-300 p-2 flex gap-2">
-          <div className="relative w-[8.125rem] shrink-0">
-            <div className="">
-              <img
-                className="h-[7.625rem] object-cover w-[8rem] bg-inherit rounded-md"
-                src={product.image.url}
-                alt="Product Image"
-              />
-              <div className="mt-2 flex w-full justify-center gap-3 items-center">
-                {product.images &&
-                  product.images.length > 0 &&
-                  product.images.map((img, idx) => (
-                    <img
-                      key={idx}
-                      className="h-5 w-5 object-cover rounded-[2px]   "
-                      src={img.url}
-                      alt={`Additional Image ${idx + 1}`}
-                    />
-                  ))}
-              </div>
-            </div>
-          </div>
-          <div className="w-full">
-            <div className="flex items-center justify-between">
-              <h3 className=" text-[0.813rem] font-[600] mb-2 underline decoration-gray-400 underline-offset-4">
-                {product.name}
-              </h3>
-              <GoShareAndroid />
-            </div>
-
-            <p className="text-gray-600 text-xs font-medium mb-4">
-              {product.description.length > 200
-                ? `${product.description.slice(0, 200)}...`
-                : product.description}
-            </p>
-            <div className="flex items-center justify-between w-full">
-              <div className="flex h-4 items-center gap-2">
-                <span className="text-[0.813rem] font-[600]  whitespace-nowrap ">
-                  रू {product.price}
-                </span>
-                <Separator className=" bg-black" orientation="vertical" />
-                <span className="text-xs whitespace-nowrap "> {product.category.name}</span>
-              </div>
-              <div className="">
-                <CiBookmarkPlus className="text-xl font-bold" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <Separator className="w-full h-px bg-gray-300 mt-4" />{" "}
-    </div>
+  const products = allProducts?.map((product) => (
+    <LinearCard product={product} key={product._id} />
   ));
-  const productsGrid = productsData?.data?.map((product, index) => (
-    <div key={product._id} className="">
-      <div className=" h-fit mx-0   flex">
-        <div className="border-2 w-full border-transparent rounded-2xl hover:bg-slate-100 hover:border-2 hover:border-blue-300 p-2 flex flex-col gap-2">
-          <div className="shrink-0 flex justify-center">
-            <img
-              className=" object-cover w-full bg-inherit rounded-md"
-              src={product.image.url}
-              alt="Product Image"
-            />
-          </div>
-
-          <div className="w-full">
-            <div className="flex items-center justify-between">
-              <h3 className=" text-[0.813rem] font-[600] mb-2 underline decoration-gray-400 underline-offset-4">
-                {product.name}
-              </h3>
-              <GoShareAndroid />
-            </div>
-
-            <p className="text-gray-600 text-xs font-medium mb-4">
-              {product.category.name}
-            </p>
-            <div className="flex items-center justify-between w-full">
-              <div className="flex h-4 items-center gap-2">
-                <span className="text-[0.813rem] font-[600] ">
-                  रू {product.price}
-                </span>
-                <Separator className=" bg-black" orientation="vertical" />
-              </div>
-              <div className="">
-                <CiBookmarkPlus className="text-xl font-bold" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  const productsGrid = allProducts?.map((product) => (
+    <GridCard product={product} key={product._id} />
   ));
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage && !isFetchNextPageError)
+      fetchNextPage();
+  }, [
+    inView,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+    fetchNextPage,
+  ]);
+  useEffect(() => {
+    if (productsData?.pages?.[0]?.categoryName) {
+      setSearchPlaceHolder(`search for ${productsData.pages[0].categoryName}`);
+    }
+  }, [productsData?.pages]);
+
   return (
     <div className="flex w-full">
-    <div className="flex flex-1 w-fit flex-col gap-5 border-x-2 p-4">
+      <div className="flex flex-1 w-fit flex-col gap-5 border-x-2 p-4">
         <div className=" text-lg h-fit mx-0  border-b-2 flex justify-between p-4 text-l items-center gap-3 sticky top-[64px] z-10 bg-white">
-        <TbCategory2
-          className="text-2xl block sm:hidden"
-          onClick={() => handleToggle()}
-        />{" "}
-        Category: {productsData?.categoryName}
-        {isGrid ? (
-          <CiGrid2H
-            className="text-xl"
-            onClick={() => setIsGrid((prev) => !prev)}
-          />
-        ) : (
-          <BsGrid
-            className="text-xl"
-            onClick={() => setIsGrid((prev) => !prev)}
-          />
-        )}
-      </div>
-      {productsLoading ? (
-        Array.from({ length: 5 }).map((_, index) => (
-          <ProductCardSkeleton key={index} />
-        ))
-      ) : !isGrid ? (
-        products
-      ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3  gap-3">
-          {productsGrid}
+          <TbCategory2
+            className="text-2xl block sm:hidden"
+            onClick={() => handleToggle()}
+          />{" "}
+          Category: {productsData?.pages[0]?.categoryName}
+          {isGrid ? (
+            <CiGrid2H
+              className="text-xl"
+              onClick={() => setIsGrid((prev) => !prev)}
+            />
+          ) : (
+            <BsGrid
+              className="text-xl"
+              onClick={() => setIsGrid((prev) => !prev)}
+            />
+          )}
         </div>
-      )}
-    </div>
-    <div className="w-[40%] hidden lg:block">
-
-    </div>
+        {isLoading ? (
+          Array.from({ length: 5 }).map((_, index) => (
+            <ProductCardSkeleton key={index} />
+          ))
+        ) : isLoadingError ? (
+          <div className="flex flex-col items-center gap-2 mt-4">
+            <p className="text-sm text-red-500">Failed to load products</p>
+            <button onClick={() => refetch()} className="text-sm underline">
+              Retry
+            </button>
+          </div>
+        ) : !isGrid ? (
+          <>
+            {products}
+            {isFetchingNextPage &&
+              Array.from({ length: 5 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))}
+          </>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-3  gap-3">
+              {productsGrid}
+              {isFetchingNextPage &&
+                Array.from({ length: 5 }).map((_, index) => (
+                  <ProductCardSkeletonGrid key={index} />
+                ))}
+            </div>
+            {isFetchNextPageError && (
+              <div className="flex flex-col items-center gap-2 mt-4">
+                <p className="text-sm text-red-500">
+                  Failed to load more products
+                </p>
+                <button
+                  onClick={() => fetchNextPage()}
+                  className="text-sm underline"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+          </>
+        )}
+        <div ref={ref}> </div>
+      </div>
+      <div className="w-[40%] hidden lg:block"></div>
     </div>
   );
 }

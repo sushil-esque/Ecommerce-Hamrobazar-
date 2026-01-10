@@ -4,7 +4,7 @@ import { deleteProduct, getAllProducts } from "@/api/products";
 import { DataTable } from "@/Components/data-table";
 import Loader from "@/Components/Loader";
 import { toast } from "@/hooks/use-toast";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/Components/ui/button";
@@ -29,9 +29,10 @@ export default function ViewProducts() {
   const[deletingId,setDeletingId]=useState();
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
-  const { data, isLoading,refetch} = useQuery({
+  const { data, isLoading, isFetching, isPlaceholderData} = useQuery({
     queryKey: ["products", page],
     queryFn: () => getAllProducts({ page}),
+    placeholderData: keepPreviousData,
   });
   const queryClient = useQueryClient();
 
@@ -181,14 +182,14 @@ export default function ViewProducts() {
 
   return (
     <div className=" mt-20 mx-10 py-10">
-      <DataTable columns={columns} data={data.data} />
+      <DataTable columns={columns} data={data?.data?? []} />
     <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"
           disabled={page===1}
           onClick={() => {setPage((prev)=>Math.max(prev-1,1));
-          refetch();
+          
           }}
         >
           Previous
@@ -196,9 +197,9 @@ export default function ViewProducts() {
         <Button
           variant="outline"
           size="sm"
-          disabled={data.pages===page}
+          disabled={isPlaceholderData || data.pages===page}
         onClick={() => {setPage((prev)=>prev+1);
-        refetch();
+       
         }}
         >
           Next

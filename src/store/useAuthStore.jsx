@@ -6,6 +6,8 @@ const useAuthStore = create((set) => ({
   
   user : null,
   setUser: (userData) => set(() => ({ user: userData })),
+  searchPlaceHolder: null,
+  setSearchPlacePlaceHolder: (placeHolder)=> set(()=>({searchPlaceHolder: placeHolder})),
   token: tokenInit,
   isLoggedIn: isLoggedInInit,
   count: 1,

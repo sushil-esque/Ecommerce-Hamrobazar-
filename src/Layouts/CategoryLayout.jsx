@@ -1,22 +1,12 @@
+import AdsCarousel from "@/Components/AdsCarousel";
+import Loader from "@/Components/Loader";
+import { Separator } from "@/components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
-import {
-  getAllProducts,
-  getCategoryWiseProducts,
-  getProducts,
-} from "../api/products";
-import { TbCategory2, TbCurrencyRupeeNepalese } from "react-icons/tb";
-import { getAllCategory, getCategories } from "../api/allCategory";
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
-import useAuthStore from "../store/useAuthStore";
-import Loader from "@/Components/Loader";
+import { TbCategory2 } from "react-icons/tb";
 import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
-import AdsCarousel from "@/Components/AdsCarousel";
-import { Separator } from "@/components/ui/separator";
-import { CiBookmarkPlus } from "react-icons/ci";
-import { GoShareAndroid } from "react-icons/go";
-import { Cat } from "lucide-react";
-import { use } from "react";
+import { getCategories } from "../api/allCategory";
 
 function CategoryLayout() {
   // const { data, error, isLoading, isError } = useQuery({
@@ -44,10 +34,8 @@ function CategoryLayout() {
     retry: 2,
   });
 
-
-
   console.log(categoryData);
-  if ( categoryLoading) {
+  if (categoryLoading) {
     return <Loader />;
   }
 
@@ -80,17 +68,7 @@ function CategoryLayout() {
           </div>
         </div>
 
-        <ul className="space-y-1">
-          <li onClick={() => handleCategoryClick("all")} className="border-b-2">
-            <a
-              href="#"
-              className="block rounded-lg px-4 py-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              All
-            </a>
-          </li>
-          {categories}
-        </ul>
+        <ul className="space-y-1">{categories}</ul>
       </div>
     </div>
   );
@@ -114,10 +92,7 @@ function CategoryLayout() {
           <Separator className="my-1 w-full" />
 
           <div className="px-4">
-            <ul className="">
-            
-              {categories}
-            </ul>
+            <ul className="">{categories}</ul>
           </div>
         </div>
       )}
@@ -126,7 +101,7 @@ function CategoryLayout() {
       <div className="flex flex-col flex-1 ">
         <AdsCarousel />
 
-       <Outlet/>
+        <Outlet />
       </div>
     </div>
   );

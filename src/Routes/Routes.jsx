@@ -1,5 +1,3 @@
-import AdminLayout from "@/Components/AdminLayout";
-import CategoryLayout from "@/Components/CategoryLayout";
 import AddProducts from "@/Pages/Admin/AddProducts";
 import Categories from "@/Pages/Admin/Categories";
 import EditProduct from "@/Pages/Admin/EditProduct";
@@ -12,13 +10,15 @@ import SingleProduct from "@/Pages/SingleProduct";
 import {
   createBrowserRouter,
   createRoutesFromElements,
-  Route
+  Route,
 } from "react-router";
 import { RouterProvider } from "react-router-dom";
-import Layout from "../Components/Layout";
+import Layout from "../Layouts/Layout";
 import Home from "../Pages/Home";
 import Login from "../Pages/Login";
 import Signup from "../Pages/SignIn";
+import CategoryLayout from "@/Layouts/CategoryLayout";
+import AdminLayout from "@/Layouts/AdminLayout";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -26,7 +26,7 @@ const routes = createBrowserRouter(
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="home" element={<Home />} />
-        <Route path="category" element={<CategoryLayout />} >
+        <Route path="category" element={<CategoryLayout />}>
           <Route path=":slug" element={<CategoryWiseProducts />} />
         </Route>
 
