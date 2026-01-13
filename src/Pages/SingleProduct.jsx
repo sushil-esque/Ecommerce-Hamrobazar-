@@ -1,52 +1,130 @@
-import { getProducts } from "@/api/products";
+import { getProduct } from "@/api/products";
 import Loader from "@/Components/Loader";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/Components/ui/carousel";
+import { Separator } from "@radix-ui/react-select";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { CiShoppingCart } from "react-icons/ci";
-import { TbCurrencyRupeeNepalese } from "react-icons/tb";
+import Autoplay from "embla-carousel-autoplay";
+import { useEffect, useMemo, useState } from "react";
+import { CiBookmark, CiBookmarkPlus, CiShoppingCart } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
+import { TbCurrencyRupeeNepalese } from "react-icons/tb";
+import { useParams } from "react-router-dom";
 
 function SingleProduct() {
   const { id } = useParams();
-  const { data, isLoading, isError } = useQuery({
+  // const [images, setImages] = useState();
+  const [api, setApi] = useState();
+  const [currentSlide, setCurrentSlide] = useState();
+  const {
+    data: product,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["singleProduct", id],
-    queryFn: () => getProducts(`/${id}`),
+    queryFn: () => getProduct({ id }),
     retry: 2,
   });
+  const images = useMemo(() => {
+    if (!product) return [];
+
+    return [
+      ...(product.images?.map((img) => img.url) ?? []),
+      ...(product.image?.url ? [product.image.url] : []),
+    ];
+  }, [product]);
+
+  console.log(images);
+  // useEffect(() => {
+  //   if (product)
+  //     setImages([...product?.images?.map((img) => img.url), product.image.url]);
+  // }, [product]);
   if (isLoading) {
     return <Loader />;
   }
   if (isError) {
     return <div>Something went wrong</div>;
   }
-  console.log(data);
   return (
     <div className="lg:mx-24 md:mx-4 sm:mx-4 mb-24">
       <div className="flex gap-5 flex-wrap">
         <div className="w-[340px] h-full p-5 flex flex-col">
-          <img
-            src={data.image}
-            alt="image"
-            className="w-[331px] h-[270px] object-contain rounded-md "
-          />
-          <div className="border-t-2 mt-3 flex items-center justify-center gap-6 p-2">
+          <div className="flex flex-col mb-8">
+            <Carousel
+              setApi={setApi}
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+              className="w-full"
+            >
+              <CarouselContent className="m-0">
+                {images?.map((img, index) => (
+                  <CarouselItem key={index} className="pl-0 w-full">
+                    <img
+                      src={img}
+                      className="w-[331px] h-[270px] object-contain rounded-md "
+                      alt="Ad 1"
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {/* <CarouselPrevious className="left-0" variant="ghost" />
+              <CarouselNext className="right-0" variant="ghost" /> */}
+            </Carousel>
+            {/* <img
+              src={product?.image.url}
+              alt="image"
+              className="w-[331px] h-[270px] object-contain rounded-md "
+            /> */}
+            <div className="mt-2 flex w-full justify-center gap-5 items-center">
+              {images &&
+                images.length > 0 &&
+                images.map((img, idx) => (
+                  <img
+                    key={idx}
+                    className={`h-8 w-8 object-cover rounded-[2px] ${
+                      currentSlide === idx ? "opacity-100" : "opacity-60"
+                    }   `}
+                    src={img}
+                    alt={`Additional Image ${idx + 1}`}
+                    onClick={() => {
+                      setCurrentSlide(idx);
+                      api?.scrollTo(idx);
+                    }}
+                  />
+                ))}
+            </div>
+          </div>
+
+          <div className="border-t-2 mt-3 flex items-center justify-center gap-6 p-4">
             <div className="flex items-center gap-1 justify-center cursor-pointer">
-              <CiShoppingCart className="text-2xl" />
+              <CiBookmark className="text-2xl " />
+
               <div className="text-gray-400">Add to cart</div>
             </div>
-            <div className="w-px h-4 bg-gray-300 mx-2"></div> {/* Gray line */}
+            {/* <div className="w-px h-4 bg-gray-300 mx-2"></div> Gray line */}
+            <Separator
+              orientation="vertical"
+              className="h-5 w-px bg-gray-300"
+            />
             <div className="flex items-center gap-1 justify-center">
               <TbCurrencyRupeeNepalese />
-              <div className=" font-bold">{data.price}</div>
+              <div className=" font-bold">{product?.price}</div>
             </div>
           </div>
         </div>
         <div className="flex flex-col gap-5 border-x-2 p-5 w-[615px] py-16">
           <div>
-            <div className="text-xl font-bold ">{data.title}</div>
-            <div className="text-gray-500 italic">{data.category}</div>
+            <div className="text-xl font-bold ">{product?.name}</div>
+            <div className="text-gray-500 italic">{product?.category.name}</div>
           </div>
-          <div >
+          <div>
             <div className="text-lg border-y-2 flex justify-between items-center py-2">
               <div>Description</div>
               <div>
@@ -54,7 +132,18 @@ function SingleProduct() {
               </div>
             </div>
 
-            <div className="text-gray-700">{data.description}</div>
+            <div className="text-gray-700">{product?.description}</div>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium">Specifications</h3>
+            <div className="bg-[#f9f8f9] px-5 py-3">
+              <div>
+                <div className="flex w-full font-[380] p-1 border-b ">
+                  <div className="w-[30%] ">hello</div>
+                  <div className="w-[70%]">value</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

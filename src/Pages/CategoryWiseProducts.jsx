@@ -88,8 +88,12 @@ function CategoryWiseProducts() {
           <TbCategory2
             className="text-2xl block sm:hidden"
             onClick={() => handleToggle()}
-          />{" "}
-          Category: {productsData?.pages[0]?.categoryName}
+          />
+          <span className="truncate">
+            {searchQuery
+              ? `Results for "${searchQuery}"`
+              : `Category: ${productsData?.pages?.[0]?.categoryName ?? "All"}`}
+          </span>
           {isGrid ? (
             <CiGrid2H
               className="text-xl"

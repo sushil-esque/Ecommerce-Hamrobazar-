@@ -1,8 +1,10 @@
 import { Separator } from "@radix-ui/react-select"
 import { CiBookmarkPlus } from "react-icons/ci"
 import { GoShareAndroid } from "react-icons/go"
+import { useNavigate } from "react-router-dom"
 
 function LinearCard({product}) {
+  const navigate = useNavigate()
   return (
     <div  className="">
           <div className=" h-fit mx-0   flex">
@@ -12,6 +14,7 @@ function LinearCard({product}) {
                   <img
                     className="h-[7.625rem] object-cover w-[8rem] bg-inherit rounded-md"
                     src={product.image.url}
+                    onClick={()=> navigate(`/product/${product?._id}`)}
                     alt="Product Image"
                   />
                   <div className="mt-2 flex w-full justify-center gap-3 items-center">

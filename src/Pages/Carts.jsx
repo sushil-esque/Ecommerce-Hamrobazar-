@@ -1,10 +1,10 @@
-import { getProducts, getUserCart } from "@/api/products";
+import { getUserCart } from "@/api/products";
 import Loader from "@/Components/Loader";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { FaLongArrowAltLeft, FaSortDown, FaSortUp } from "react-icons/fa";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { FaLongArrowAltLeft } from "react-icons/fa";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
 function Carts() {
