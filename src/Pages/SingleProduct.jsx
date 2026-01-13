@@ -20,7 +20,7 @@ function SingleProduct() {
   const { id } = useParams();
   // const [images, setImages] = useState();
   const [api, setApi] = useState();
-  const [currentSlide, setCurrentSlide] = useState();
+  const [currentSlide, setCurrentSlide] = useState(0);
   const {
     data: product,
     isLoading,
@@ -65,7 +65,7 @@ function SingleProduct() {
             >
               <CarouselContent className="m-0">
                 {images?.map((img, index) => (
-                  <CarouselItem key={index} className="pl-0 w-full">
+                  <CarouselItem key={index} className=" w-full">
                     <img
                       src={img}
                       className="w-[331px] h-[270px] object-contain rounded-md "
@@ -119,29 +119,54 @@ function SingleProduct() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-5 border-x-2 p-5 w-[615px] py-16">
+        <div className="flex flex-col gap-3 border-x-2 p-5 w-[615px] ">
+        
+            <div className="text-2xl font-bold ">{product?.name}</div>
+         
           <div>
-            <div className="text-xl font-bold ">{product?.name}</div>
-            <div className="text-gray-500 italic">{product?.category.name}</div>
-          </div>
-          <div>
-            <div className="text-lg border-y-2 flex justify-between items-center py-2">
+            {/* <div className="text-lg border-y-2 flex justify-between items-center py-2">
               <div>Description</div>
               <div>
                 <GoShareAndroid />
               </div>
+            </div> */}
+            <div className="border-b-2 flex justify-between items-center">
+              <div
+                className={`text-lg  border-b-2 w-fit  px-4 pb-2 pt-0 -mb-0.5 border-black 
+                 `}
+              >
+                Description
+              </div>
+              <GoShareAndroid className="text-xl" />
             </div>
 
-            <div className="text-gray-700">{product?.description}</div>
+            <div className="text-gray-700 py-2">{product?.description}</div>
           </div>
           <div>
-            <h3 className="text-lg font-medium">Specifications</h3>
+            <h3 className="text-lg font-medium mb-5">Specifications</h3>
             <div className="bg-[#f9f8f9] px-5 py-3">
-              <div>
-                <div className="flex w-full font-[380] p-1 border-b ">
-                  <div className="w-[30%] ">hello</div>
-                  <div className="w-[70%]">value</div>
+              <div className="flex w-full font-[380] p-1 border-b ">
+                <div className="w-[30%] ">hello</div>
+                <div className="w-[70%]">value</div>
+              </div>
+              <div className="flex w-full font-[380] p-1 border-b ">
+                <div className="w-[30%] ">hello</div>
+                <div className="w-[70%]">
+                  value k xa bto fkjfsd sf fmlmls fnsdlk fndlsnflks slnflsnf
+                  anslnflsf{" "}
                 </div>
+              </div>
+              <div className="flex w-full font-[380] p-1 border-b ">
+                <div className="w-[30%] ">hello</div>
+                <div className="w-[70%]">value</div>
+              </div>
+              <div className="flex w-full font-[380] p-1 border-b ">
+                <div className="w-[30%] ">hello</div>
+                <div className="w-[70%]">value</div>
+              </div>
+              <div className="flex w-full font-[380] p-1 border-b ">
+                <div className="w-[30%] ">hello</div>
+                <div className="w-[70%]">value</div>
               </div>
             </div>
           </div>
