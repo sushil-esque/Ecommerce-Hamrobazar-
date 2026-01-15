@@ -91,7 +91,7 @@ function CategoryWiseProducts() {
           />
           <span className="truncate">
             {searchQuery
-              ? `Results for "${searchQuery}"`
+              ? `Search results for "${searchQuery}"`
               : `Category: ${productsData?.pages?.[0]?.categoryName ?? "All"}`}
           </span>
           {isGrid ? (

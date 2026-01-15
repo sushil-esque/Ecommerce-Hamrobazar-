@@ -154,11 +154,6 @@ function Home() {
 
   return (
     <div className="flex max-w-[1320px] mx-auto lg:mx-24 md:mx-4 sm:mx-4 ">
-      {/* <div>
-      <span>{count}</span>
-      <button onClick={() => setCount("apple")}>set count</button>
-      <button onClick={inc}>one up</button>
-    </div> */}
       {categoryData && (
         <div className="sm:flex h-screen flex-col   bg-white   sticky top-20 hidden lg:w-[360px] w-[200px] ">
           <div className="flex items-center gap-2 pl-8 ">
@@ -186,8 +181,9 @@ function Home() {
               <TbCategory2
                 className="text-2xl block sm:hidden"
                 onClick={() => handleToggle()}
-              />{" "}
-              Latest Products
+              />
+              {searchQuery ? `search results for: "${searchQuery}" ` : "Latest Products"}
+
               {isGrid ? (
                 <CiGrid2H
                   className="text-xl"

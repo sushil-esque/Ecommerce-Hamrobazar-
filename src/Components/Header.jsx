@@ -56,6 +56,7 @@ function Header() {
           onSubmit={(e) => {
             e.preventDefault(); // prevent page reload
             setSearchParams({ query: searchValue });
+            setSearchValue("");
           }}
           className="border border-black rounded-md flex items-center px-6 lg:w-[37rem] md:w-[25rem] w-[20rem]"
         >

@@ -32,8 +32,16 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldLegend,
+  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/Components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/Components/ui/input-group";
 import {
   Select,
   SelectContent,
@@ -45,8 +53,9 @@ import { Spinner } from "@/Components/ui/spinner";
 import { Textarea } from "@/Components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BiUndo } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -89,6 +98,14 @@ function AddProduct() {
       .min(10, { message: "Description must be at least 10 characters" }),
 
     category: z.string().min(1, { message: "Category is required" }),
+    specifications: z.array(
+      z.object({
+        name: z.string().min(1, { message: "Specification Name is required" }),
+        value: z
+          .string()
+          .min(1, { message: "Specification value is required" }),
+      })
+    ),
   });
   const form = useForm({
     resolver: zodResolver(createProductValidationSchema),
@@ -100,7 +117,12 @@ function AddProduct() {
       category: "",
       image: null,
       images: [],
+      specifications: [{ name: "", value: "" }],
     },
+  });
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "specifications",
   });
   const queryClient = useQueryClient();
   const { mutate: productMutate, isPending } = useMutation({
@@ -114,7 +136,7 @@ function AddProduct() {
     },
     onError: (error) => {
       console.error("Error adding product:", error);
-     toast.error(error.error || "There was an error adding the product.");
+      toast.error(error.error || "There was an error adding the product.");
     },
   });
 
@@ -138,8 +160,8 @@ function AddProduct() {
   };
 
   const onSubmit = (data) => {
-    const values = form.getValues("images");
-    console.log(values);
+    const values = form.getValues();
+    console.log(data.specifications);
     const formData = new FormData();
 
     formData.append("name", data.name);
@@ -147,6 +169,7 @@ function AddProduct() {
     formData.append("stock", data.stock);
     formData.append("category", data.category);
     formData.append("description", data.description);
+    formData.append("specifications", JSON.stringify(data.specifications));
     if (mainPreview?.file) formData.append("image", mainPreview.file);
 
     if (Array.isArray(images) && images.length > 0) {
@@ -185,7 +208,6 @@ function AddProduct() {
         }
         return prev.filter((_, i) => i !== index);
       }
-     
     });
   };
   const handleImagesUpload = (file) => {
@@ -200,8 +222,8 @@ function AddProduct() {
     <>
       {console.log(images)}
       {console.log(mainPreview)}
-    
-{/* {!isPending && (
+
+      {/* {!isPending && (
   <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 backdrop-blur-sm">
     <div className="flex flex-col items-center gap-2 text-white">
       <Spinner/>
@@ -209,13 +231,11 @@ function AddProduct() {
     </div>
   </div>
 )} */}
-      <form 
+      <form
         className=" w-full p-6 mt-[72px] relative"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-          
         <FieldGroup className="w-full ">
-          
           <div className="lg:flex flex-row gap-4 ">
             <div className="w-full h-fit  lg:w-[55%] ">
               <Card className=" mx-auto h-fit mb-4">
@@ -322,7 +342,7 @@ function AddProduct() {
                 <CardHeader>
                   <CardTitle>Product details</CardTitle>
                 </CardHeader>
-                <CardContent className="w-full overflow-hidden">
+                <CardContent className="w-full overflow-hidden flex flex-col gap-2">
                   <Controller
                     control={form.control}
                     name="category"
@@ -354,6 +374,111 @@ function AddProduct() {
                       </Field>
                     )}
                   />
+                  <FieldSet className="gap-4">
+                    <FieldLegend variant="label">Specifications</FieldLegend>
+
+                    <FieldGroup className="gap-4">
+                      {fields.map((field, index) => (
+                        <div key={field.id} className="flex gap-2">
+                          <Controller
+                            name={`specifications.${index}.name`}
+                            control={form.control}
+                            render={({
+                              field: controllerField,
+                              fieldState,
+                            }) => (
+                              <Field
+                                orientation="horizontal"
+                                data-invalid={fieldState.invalid}
+                              >
+                                <FieldContent>
+                                  <InputGroup>
+                                    <InputGroupInput
+                                      {...controllerField}
+                                      placeholder="name"
+                                      aria-invalid={fieldState.invalid}
+                                    />
+                                    {fields.length > 1 && (
+                                      <InputGroupAddon align="inline-end">
+                                        <InputGroupButton
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon-xs"
+                                          onClick={() => remove(index)}
+                                          aria-label={`Remove email ${
+                                            index + 1
+                                          }`}
+                                        >
+                                          <XIcon />
+                                        </InputGroupButton>
+                                      </InputGroupAddon>
+                                    )}
+                                  </InputGroup>
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </FieldContent>
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            name={`specifications.${index}.value`}
+                            control={form.control}
+                            render={({
+                              field: controllerField,
+                              fieldState,
+                            }) => (
+                              <Field
+                                orientation="horizontal"
+                                data-invalid={fieldState.invalid}
+                              >
+                                <FieldContent>
+                                  <InputGroup>
+                                    <InputGroupInput
+                                      {...controllerField}
+                                      aria-invalid={fieldState.invalid}
+                                      placeholder="value"
+                                    />
+                                    {fields.length > 1 && (
+                                      <InputGroupAddon align="inline-end">
+                                        <InputGroupButton
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon-xs"
+                                          onClick={() => remove(index)}
+                                          aria-label={`Remove email ${
+                                            index + 1
+                                          }`}
+                                        >
+                                          <XIcon />
+                                        </InputGroupButton>
+                                      </InputGroupAddon>
+                                    )}
+                                  </InputGroup>
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </FieldContent>
+                              </Field>
+                            )}
+                          />
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => append({ name: "", value: "" })}
+                      >
+                        Add another Specification
+                      </Button>
+                    </FieldGroup>
+                    {form.formState.errors.specifications?.root && (
+                      <FieldError
+                        errors={[form.formState.errors.specifications.root]}
+                      />
+                    )}
+                  </FieldSet>
                 </CardContent>
               </Card>
             </div>
@@ -447,58 +572,14 @@ function AddProduct() {
                             src={img.url}
                             className="object-cover w-full h-full"
                           />
-                          {img.file ? (
-                            <button
-                              type="button"
-                              onClick={() => undoChange(index)}
-                              className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
-                            >
-                              <BiUndo />
-                            </button>
-                          ) : (
-                            // <button
-                            //   type="button"
-                            //   onClick={() =>
-                            //     ImageDeletion({
-                            //       productId: id,
-                            //       public_id: img.public_id,
-                            //     })
-                            //   }
-                            //   className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
-                            // >
-                            //   ×
-                            // </button>
-                            <AlertDialog>
-                              <AlertDialogTrigger className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  ">
-                                ×
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Are you absolutely sure?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will
-                                    permanently delete the image from our
-                                    servers.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() =>
-                                      ImageDeletion({
-                                        productId: id,
-                                        public_id: img.public_id,
-                                      })
-                                    }
-                                  >
-                                    Continue
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => undoChange(index)}
+                            className="absolute top-[2px] right-1 text-gray-600 text-lg rounded-full  "
+                          >
+                            <BiUndo />
+                          </button>
 
                           <Input
                             type="file"
@@ -566,8 +647,14 @@ function AddProduct() {
             type="submit"
             className={"w-[100px] mb-4 mr-4"}
             onClick={form.handleSubmit(onSubmit)}
-          >{isPending ? <span className="flex gap-2"><Spinner/> Saving...</span> :"Save changes"}
-            
+          >
+            {isPending ? (
+              <span className="flex gap-2">
+                <Spinner /> Saving...
+              </span>
+            ) : (
+              "Save changes"
+            )}
           </Button>
           <Button
             type="button"

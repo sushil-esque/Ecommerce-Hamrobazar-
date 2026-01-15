@@ -31,7 +31,7 @@ export default function ViewProducts() {
   const navigate = useNavigate();
   const { data, isLoading, isFetching, isPlaceholderData} = useQuery({
     queryKey: ["products", page],
-    queryFn: () => getAllProducts({ page}),
+    queryFn: () => getAllProducts({ pageParam:page}),
     placeholderData: keepPreviousData,
   });
   const queryClient = useQueryClient();
@@ -197,7 +197,7 @@ export default function ViewProducts() {
         <Button
           variant="outline"
           size="sm"
-          disabled={isPlaceholderData || data.pages===page}
+          disabled={isPlaceholderData || !data.nextPage}
         onClick={() => {setPage((prev)=>prev+1);
        
         }}

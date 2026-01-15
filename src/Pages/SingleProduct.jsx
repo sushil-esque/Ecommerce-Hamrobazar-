@@ -21,6 +21,7 @@ function SingleProduct() {
   // const [images, setImages] = useState();
   const [api, setApi] = useState();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [tab, setTab] = useState("description");
   const {
     data: product,
     isLoading,
@@ -120,9 +121,8 @@ function SingleProduct() {
           </div>
         </div>
         <div className="flex flex-col gap-3 border-x-2 p-5 w-[615px] ">
-        
-            <div className="text-2xl font-bold ">{product?.name}</div>
-         
+          <div className="text-2xl font-bold ">{product?.name}</div>
+
           <div>
             {/* <div className="text-lg border-y-2 flex justify-between items-center py-2">
               <div>Description</div>
@@ -130,44 +130,45 @@ function SingleProduct() {
                 <GoShareAndroid />
               </div>
             </div> */}
-            <div className="border-b-2 flex justify-between items-center">
-              <div
-                className={`text-lg  border-b-2 w-fit  px-4 pb-2 pt-0 -mb-0.5 border-black 
+            <div className="border-b flex justify-between items-center">
+              <div className="flex">
+                <div
+                  className={`text-lg   w-fit  px-4 pb-2 pt-0 cursor-pointer ${
+                    tab === "description" && "border-b-2 border-b-black "
+                  } 
                  `}
-              >
-                Description
+                  onClick={() => setTab("description")}
+                >
+                  Description
+                </div>
+                <div
+                  className={`text-lg  w-fit  px-4 pb-2 pt-0  cursor-pointer  ${
+                    tab === "reviews" && "border-b-2 border-b-black "
+                  } 
+                 `}
+                  onClick={() => setTab("reviews")}
+                >
+                  Reviews
+                </div>
               </div>
+
               <GoShareAndroid className="text-xl" />
             </div>
-
-            <div className="text-gray-700 py-2">{product?.description}</div>
+            {tab === "description" ? (
+              <div className=" py-2">{product?.description}</div>
+            ) : (
+              <div className=" py-2">reviews</div>
+            )}
           </div>
           <div>
             <h3 className="text-lg font-medium mb-5">Specifications</h3>
             <div className="bg-[#f9f8f9] px-5 py-3">
-              <div className="flex w-full font-[380] p-1 border-b ">
-                <div className="w-[30%] ">hello</div>
-                <div className="w-[70%]">value</div>
-              </div>
-              <div className="flex w-full font-[380] p-1 border-b ">
-                <div className="w-[30%] ">hello</div>
-                <div className="w-[70%]">
-                  value k xa bto fkjfsd sf fmlmls fnsdlk fndlsnflks slnflsnf
-                  anslnflsf{" "}
+              {product?.specifications?.map((spec) => (
+                <div key={spec._id} className="flex w-full font-[380] p-1 border-b ">
+                  <div className="w-[30%] ">{spec.name}</div>
+                  <div className="w-[70%]">{spec.value}</div>
                 </div>
-              </div>
-              <div className="flex w-full font-[380] p-1 border-b ">
-                <div className="w-[30%] ">hello</div>
-                <div className="w-[70%]">value</div>
-              </div>
-              <div className="flex w-full font-[380] p-1 border-b ">
-                <div className="w-[30%] ">hello</div>
-                <div className="w-[70%]">value</div>
-              </div>
-              <div className="flex w-full font-[380] p-1 border-b ">
-                <div className="w-[30%] ">hello</div>
-                <div className="w-[70%]">value</div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
