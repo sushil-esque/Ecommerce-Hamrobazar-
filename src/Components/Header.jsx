@@ -5,19 +5,27 @@ import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/store/useAuthStore";
 import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CiShoppingCart } from "react-icons/ci";
 import { FaMagnifyingGlass, FaSquarePlus } from "react-icons/fa6";
-import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
-
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
+import { PiShoppingCartSimpleFill } from "react-icons/pi";
+import { Badge } from "./ui/badge";
+import { useCartStore } from "@/store/useCartStore";
 // Example: Solid Icon
 function Header() {
   const { user, setUser } = useAuthStore();
+  const { cart } = useCartStore();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [, setSearchParams] = useSearchParams();
-  const { searchPlaceHolder } = useSearchPlaceHolder();
+  const { searchPlaceHolder, setSearchPlaceHolder } = useSearchPlaceHolder();
 
   const { mutate: logoutMutate } = useMutation({
     mutationFn: logout,
@@ -31,9 +39,13 @@ function Header() {
       navigate("/");
     },
   });
-  {
-    console.log(searchValue);
-  }
+  const { pathname } = useLocation();
+  console.log(pathname);
+
+  useEffect(() => {
+    if (!pathname.startsWith("/category"))
+      setSearchPlaceHolder("Search for anything");
+  }, [pathname]);
   return (
     <div className="flex flex-col justify-center py-3 fixed top-0 z-20 box-border w-full bg-white">
       <div className="text-black text-lg bg-white  flex justify-between lg:mx-24 md:mx-4 sm:mx-4 items-center gap-1 sm:gap-2 box-border">
@@ -55,7 +67,13 @@ function Header() {
         <form
           onSubmit={(e) => {
             e.preventDefault(); // prevent page reload
-            setSearchParams({ query: searchValue });
+            if (pathname.startsWith("/category")) {
+              setSearchParams({ query: searchValue });
+            } else {
+              navigate(
+                `/?query=${encodeURIComponent(searchValue)}`
+              );
+            }
             setSearchValue("");
           }}
           className="border border-black rounded-md flex items-center px-6 lg:w-[37rem] md:w-[25rem] w-[20rem]"
@@ -72,20 +90,32 @@ function Header() {
           </button>
         </form>
 
-        <div className="bg-black px-3 py-2 text-white rounded-md sm:flex items-center gap-2 justify-center w-max shrink-0 hidden hover:text-black hover:bg-white transition-colors duration-1000 ease-in-out border-black border-[1.5px] cursor-pointer">
-          {/* <FontAwesomeIcon icon={faPlusSquare} className="text-2xl" /> */}
+        {/* <div className="bg-black px-3 py-2 text-white rounded-md sm:flex items-center gap-2 justify-center w-max shrink-0 hidden hover:text-black hover:bg-white transition-colors duration-1000 ease-in-out border-black border-[1.5px] cursor-pointer">
           <FaSquarePlus className="text-2xl" />
           <p className="text-xs font-[400]">Post for free</p>
+        </div> */}
+        <div
+          className="bg-black px-3 py-2 text-white rounded-md sm:flex items-center gap-2 justify-center w-max shrink-0 hidden hover:text-black hover:bg-white transition-colors duration-1000 ease-in-out border-black border-[1.5px] cursor-pointer"
+          onClick={() => navigate("/cart")}
+        >
+          <div className="relative">
+            <PiShoppingCartSimpleFill className="text-2xl cursor-pointer" />
+            <Badge className="absolute hover:bg-white bg-white  text-black -top-1 -right-[6px] h-3  rounded-full px-1 font-mono tabular-nums">
+              {cart.length}
+            </Badge>
+          </div>
+          <p className="text-xs font-[400]">My Cart</p>
         </div>
+
         <div className="border-r border-black border-[1.5px] h-7 sm:block hidden"></div>
-        {user && (
+        {/* {user && (
           <div>
             <CiShoppingCart
               className="text-2xl cursor-pointer"
               onClick={() => navigate("/cart")}
             />
           </div>
-        )}
+        )} */}
 
         {user ? (
           <button

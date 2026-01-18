@@ -20,12 +20,7 @@ import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
 
 function Home() {
   const [selectedCategory, setSelectedCategory] = useState("all");
-  // const { data, error, isLoading, isError } = useQuery({
-  //   queryKey: ["products"],
-  //   queryFn: getProducts,
-  //   retry: 2,
-  // });
-  // console.log(data?.data);
+
 
   const [searchParam] = useSearchParams();
   const searchQuery = searchParam.get("query");
@@ -67,13 +62,13 @@ function Home() {
         ? getSearchResults({ searchQuery, pageParam })
         : getAllProducts({ pageParam }),
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => lastPage?.nextPage || undefined,
+    getNextPageParam: (lastPage) => lastPage?.nextPage,
   });
 
   console.log(isLoadingError + " error");
   const { ref, inView } = useInView();
   console.log(productsData);
-  const allProducts = productsData?.pages?.map((obj) => obj.data).flat();
+  const allProducts = productsData?.pages?.map((obj) => obj.data).flat() ?? [];
   // const { data, error, isLoading, isError } = useQuery({
   //   queryKey: ["products", selectedCategory],
   //   queryFn: () =>
@@ -85,6 +80,7 @@ function Home() {
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
   };
+ 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage && !isFetchNextPageError)
       fetchNextPage();
@@ -114,8 +110,9 @@ function Home() {
       <Separator className="my-1" />
     </li>
   ));
+ 
   const products = allProducts?.map((product) => (
-    <LinearCard product={product} key={product?._id} />
+    <LinearCard product={product} key={product?._id}  />
   ));
   const productsGrid = allProducts?.map((product) => (
     <GridCard product={product} key={product?._id} />
@@ -182,7 +179,9 @@ function Home() {
                 className="text-2xl block sm:hidden"
                 onClick={() => handleToggle()}
               />
-              {searchQuery ? `search results for: "${searchQuery}" ` : "Latest Products"}
+              {searchQuery
+                ? `search results for: "${searchQuery}" `
+                : "Latest Products"}
 
               {isGrid ? (
                 <CiGrid2H

@@ -1,10 +1,13 @@
 import { axiosWithAuth, basicAxios } from "./interceptor";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export async function getProduct({id}) {
-  return await basicAxios.get(BASE_URL + `products/` + id);
+  return await basicAxios.get("https://fakestoreapi.com/" + `products/` + id);
 }
 async function getUserCart() {
-  return await axiosWithAuth.get(BASE_URL + `carts/1`);
+  return await axiosWithAuth.get("https://fakestoreapi.com/" + `carts/1`);
+}
+export async function getProducts(params = "") {
+  return await basicAxios.get("https://fakestoreapi.com/" + `products` + params);
 }
 
 export async function getAllProducts({ pageParam = 1, limit = 4 }) {
@@ -71,4 +74,13 @@ export const getSearchResults = async ({
       `searchProducts?query=${searchQuery}&page=${pageParam}&limit=${limit}`
   );
 };
+
+export const syncCart = async (cartItems) => {
+  return await axiosWithAuth.post(
+    BASE_URL + "cart/sync",
+    { items: cartItems },
+    { withCredentials: true }
+  );
+};
+
 export { getUserCart };
