@@ -1,17 +1,14 @@
-import { getProduct } from "@/api/products";
+import { getSingleProduct } from "@/api/products";
 import Loader from "@/Components/Loader";
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  CarouselItem
 } from "@/Components/ui/carousel";
 import { Separator } from "@radix-ui/react-select";
 import { useQuery } from "@tanstack/react-query";
-import Autoplay from "embla-carousel-autoplay";
-import { useEffect, useMemo, useState } from "react";
-import { CiBookmark, CiBookmarkPlus, CiShoppingCart } from "react-icons/ci";
+import { useMemo, useState } from "react";
+import { CiBookmark } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
 import { TbCurrencyRupeeNepalese } from "react-icons/tb";
 import { useParams } from "react-router-dom";
@@ -28,7 +25,7 @@ function SingleProduct() {
     isError,
   } = useQuery({
     queryKey: ["singleProduct", id],
-    queryFn: () => getProduct({ id }),
+    queryFn: () => getSingleProduct(id),
     retry: 2,
   });
   const images = useMemo(() => {
@@ -53,9 +50,9 @@ function SingleProduct() {
   }
   return (
     <div className="lg:mx-24 md:mx-4 sm:mx-4 mb-24">
-      <div className="flex gap-5 flex-wrap">
-        <div className="w-[340px] h-full p-5 flex flex-col">
-          <div className="flex flex-col mb-8">
+      <div className="flex sm:gap-5 flex-wrap">
+        <div className="sm:w-[340px] h-full p-5 flex flex-col">
+          <div className="flex flex-col mb-8 ">
             <Carousel
               setApi={setApi}
               opts={{
@@ -64,9 +61,9 @@ function SingleProduct() {
               }}
               className="w-full"
             >
-              <CarouselContent className="m-0">
+              <CarouselContent className="m-0  ">
                 {images?.map((img, index) => (
-                  <CarouselItem key={index} className=" w-full">
+                  <CarouselItem key={index} className=" w-full flex items-center justify-center">
                     <img
                       src={img}
                       className="w-[331px] h-[270px] object-contain rounded-md "
@@ -164,7 +161,10 @@ function SingleProduct() {
             <h3 className="text-lg font-medium mb-5">Specifications</h3>
             <div className="bg-[#f9f8f9] px-5 py-3">
               {product?.specifications?.map((spec) => (
-                <div key={spec._id} className="flex w-full font-[380] p-1 border-b ">
+                <div
+                  key={spec._id}
+                  className="flex w-full font-[380] p-1 border-b "
+                >
                   <div className="w-[30%] ">{spec.name}</div>
                   <div className="w-[70%]">{spec.value}</div>
                 </div>

@@ -1,7 +1,8 @@
-import { useAddToCart } from "@/hooks/useAddToCart";
+import { addtoCart } from "@/api/cart";
+import useAuthStore from "@/store/useAuthStore";
 import { useCartStore } from "@/store/useCartStore";
-import { saveCart } from "@/utils/cart";
 import { Separator } from "@radix-ui/react-select";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CiBookmarkPlus } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
@@ -9,40 +10,34 @@ import { toast } from "sonner";
 
 function LinearCard({ product }) {
   const navigate = useNavigate();
-  const addToCart = useCartStore((state) => state.addToCart);
+  const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
+  const addToLocalCart = useCartStore((state) => state.addToLocalCart);
+  const { mutate: cartMutate, isPending: addingtoCart } = useMutation({
+    mutationFn: addtoCart,
+    onSuccess: () => {
+      toast.success("Product added to cart");
+      queryClient.invalidateQueries({ queryKey: ["cart"]});
+    },
+    onError: (err) => {
+      toast.error(err.error || "Failed to add to cart");
+    },
+  });
   const handleAddToCart = (product) => {
-    addToCart(product);
-
-    toast.success("Product added to cart");
+    if (!user) {
+      addToLocalCart(product);
+      toast.success("Product added to cart");
+    } else {
+      const items = [
+        {
+          product: product._id,
+          quantity: 1,
+        },
+      ];
+      cartMutate(items);
+    }
   };
 
-  // const addToCart = (product) => {
-  //   let existingItem = cart.find((item) => item.productId === product._id);
-
-  //   if (existingItem) {
-  //     console.log(existingItem, "existing item");
-  //     existingItem.quantity += 1;
-  //     for (let i; i < cart.length; i++) {
-  //       if (cart[i].productId === existingItem.productId) {
-  //         cart[i].push(existingItem);
-  //       }
-  //     }
-  //     console.log(cart, "from existing");
-  //     saveCart(cart);
-  //     return;
-  //   }
-  //   const item = {
-  //     productId: product._id,
-  //     name: product.name,
-  //     price: product.price,
-  //     image: product.image.url,
-  //     quantity: 1,
-  //   };
-  //   cart.push(item);
-  //   saveCart(cart);
-
-  //   console.log(cart, "from other");
-  // };
   return (
     <div className="">
       <div className=" h-fit mx-0   flex">
@@ -96,7 +91,7 @@ function LinearCard({ product }) {
               <div className="">
                 <CiBookmarkPlus
                   onClick={() => handleAddToCart(product)}
-                  className="text-xl font-bold"
+                  className="text-xl font-bold cursor-pointer"
                 />
               </div>
             </div>

@@ -1,6 +1,6 @@
-export const saveCart = (data) => {
+export const saveLocalCart = (data) => {
   localStorage.setItem("cart", JSON.stringify(data));
 };
-export const getCart = () => {
+export const getLocalCart = () => {
   return JSON.parse(localStorage.getItem("cart")) || [];
 };

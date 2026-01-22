@@ -4,22 +4,23 @@ import LinearCard from "@/Components/LinearCard";
 import Loader from "@/Components/Loader";
 import ProductCardSkeleton from "@/Components/ProductCardSkeleton";
 import ProductCardSkeletonGrid from "@/Components/ProductCardSkeletonGrid";
-import { Button } from "@/Components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import useAuthStore from "@/store/useAuthStore";
+import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { BsGrid } from "react-icons/bs";
 import { CiGrid2H } from "react-icons/ci";
 import { IoClose } from "react-icons/io5";
 import { TbCategory2 } from "react-icons/tb";
+import { useInView } from "react-intersection-observer";
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { getCategories } from "../api/allCategory";
 import { getAllProducts, getSearchResults } from "../api/products";
-import { useInView } from "react-intersection-observer";
-import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
 
 function Home() {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const { user } = useAuthStore();
 
 
   const [searchParam] = useSearchParams();

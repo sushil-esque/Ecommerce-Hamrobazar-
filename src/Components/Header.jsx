@@ -1,27 +1,24 @@
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { logout } from "@/api/login";
-import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
 import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { CiShoppingCart } from "react-icons/ci";
-import { FaMagnifyingGlass, FaSquarePlus } from "react-icons/fa6";
+import { FaMagnifyingGlass } from "react-icons/fa6";
+import { PiShoppingCartSimpleFill } from "react-icons/pi";
 import {
   NavLink,
   useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
-import { PiShoppingCartSimpleFill } from "react-icons/pi";
 import { Badge } from "./ui/badge";
-import { useCartStore } from "@/store/useCartStore";
-// Example: Solid Icon
+import { toast } from "sonner";
 function Header() {
   const { user, setUser } = useAuthStore();
   const { cart } = useCartStore();
-  const { toast } = useToast();
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState("");
   const [, setSearchParams] = useSearchParams();
@@ -30,17 +27,18 @@ function Header() {
   const { mutate: logoutMutate } = useMutation({
     mutationFn: logout,
     onError: (err) => {
-      console.log(err);
+      toast.error(err.error)
     },
     onSuccess: (data) => {
       console.log(data);
+      useCartStore.setState(() => ({ cart: [] }));
       setUser(null);
-      toast({ title: "Logout Successfull" });
+      toast.success( "Logout Successfull" );
       navigate("/");
     },
   });
   const { pathname } = useLocation();
-  console.log(pathname);
+ 
 
   useEffect(() => {
     if (!pathname.startsWith("/category"))
@@ -70,9 +68,7 @@ function Header() {
             if (pathname.startsWith("/category")) {
               setSearchParams({ query: searchValue });
             } else {
-              navigate(
-                `/?query=${encodeURIComponent(searchValue)}`
-              );
+              navigate(`/?query=${encodeURIComponent(searchValue)}`);
             }
             setSearchValue("");
           }}

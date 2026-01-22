@@ -1,15 +1,14 @@
-import { useToast } from "@/hooks/use-toast";
+import { addtoCart } from "@/api/cart";
 import useAuthStore from "@/store/useAuthStore";
-import { useCartStore } from "@/store/useCartStore";
-import { getCart } from "@/utils/cart";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getLocalCart } from "@/utils/cart";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { login } from "../api/login";
 
 function Login() {
   const { setUser } = useAuthStore();
-  const { setCart } = useCartStore();
 
   const {
     register,
@@ -17,19 +16,23 @@ function Login() {
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
-  const { user } = useAuthStore();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+ 
+  const { mutate: cartMutate } = useMutation({
+    mutationFn: addtoCart,
+    onError: (err) => {
+      console.log(err);
+      toast.error("failed to sync cart");
+    },
+    onSuccess: () => {
+      toast.success("Cart synced Successfully");
+      localStorage.removeItem("cart");
+    },
+  });
   const { mutate: loginMutate, isPending } = useMutation({
     mutationFn: login,
     onError: (err) => {
       console.log(err);
-      toast({
-        title: "Login Failed",
-        description: "Invalid Credentials",
-        variant: "destructive",
-        position: "top-right",
-      });
+      toast.error("login failed");
     },
 
     onSuccess: (data) => {
@@ -37,35 +40,21 @@ function Login() {
       setUser(data.user);
 
       // Sync localStorage cart to backend
-      const localCart = getCart();
-      console.log(localCart);
 
-      const cartData = {
-        user: data.user.id,
-        items: localCart.map((item) => ({
+      const localCart = getLocalCart();
+      console.log(localCart);
+      if (localCart.length > 0) {
+        const items = localCart.map((item) => ({
           product: item.productId,
           quantity: item.quantity,
-        })),
-      };
-      console.log(cartData, "cart");
-      // if (localCart && localCart.length > 0) {
-      //   syncCart(localCart)
-      //     .then(() => {
-      //       // Clear local cart after syncing
-      //       setCart([]);
-      //       console.log("Cart synced successfully");
-      //     })
-      //     .catch((err) => {
-      //       console.error("Failed to sync cart:", err);
-      //     });
-      // }
+        }));
+        cartMutate(items);
+      }
+ 
 
       if (data.user.role === "user") navigate("/");
       else if (data.user.role === "admin") navigate("/AdminDashboard");
-      toast({
-        title: "Login Successfull",
-        description: "Welcome to Fake Store",
-      });
+      toast.success("Login successful");
     },
   });
   const onSubmit = (data) => {

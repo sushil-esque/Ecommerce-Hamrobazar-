@@ -75,12 +75,5 @@ export const getSearchResults = async ({
   );
 };
 
-export const syncCart = async (cartItems) => {
-  return await axiosWithAuth.post(
-    BASE_URL + "cart/sync",
-    { items: cartItems },
-    { withCredentials: true }
-  );
-};
 
-export { getUserCart };
+

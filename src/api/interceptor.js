@@ -1,3 +1,4 @@
+import useAuthStore from "@/store/useAuthStore";
 import axios from "axios";
 
 export const axiosWithAuth = axios.create();
@@ -20,16 +21,16 @@ function axiosRejected(e) {
     if (e.response.status === 500) {
       return Promise.reject(e.response.data);
     }
-       if (e.response.status === 409) {
+    if (e.response.status === 409) {
       return Promise.reject(e.response.data);
     }
     if (e.response.status === 400) {
       return Promise.reject(e.response.data);
     }
     if (e.response.status === 401 || e.response.status === 403) {
-      // localStorage.removeItem("token");
-      // location.reload();
+      useAuthStore.setState({user:null})
       return Promise.reject(e.response.data);
+
     }
     return e.response.data;
   }

@@ -1,11 +1,10 @@
-import { getCart, saveCart } from "@/utils/cart";
-import { toast } from "sonner";
+import { getLocalCart, saveLocalCart } from "@/utils/cart";
 import { create } from "zustand";
 
-const localCart = getCart();
+const localCart = getLocalCart();
 export const useCartStore = create((set) => ({
   cart: localCart || [],
-  addToCart: (product) =>
+  addToLocalCart: (product) =>
     set((state) => {
       const existing = state.cart.find(
         (item) => item.productId === product._id
@@ -29,7 +28,7 @@ export const useCartStore = create((set) => ({
           },
         ];
       }
-      saveCart(updatedCart);
+      saveLocalCart(updatedCart);
      
       return { cart: updatedCart };
     }),
