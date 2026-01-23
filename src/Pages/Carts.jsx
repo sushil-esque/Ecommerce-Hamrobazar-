@@ -1,4 +1,4 @@
-import { addtoCart } from "@/api/cart";
+import { addtoCart, deleteFromCart } from "@/api/cart";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -38,6 +38,19 @@ function Carts() {
       setUpdatingItem(null);
     },
   });
+  const { mutate: cartItemDelete, isPending: isDeleting } = useMutation({
+    mutationFn: deleteFromCart,
+    onSuccess: () => {
+      toast.success("Product deleted from cart successfully");
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (err) => {
+      toast.error(err.error);
+    },
+    onSettled: () => {
+      setUpdatingItem(null);
+    },
+  });
   const handleQuantityChangeinDb = (product, amount) => {
     const items = [
       {
@@ -51,7 +64,7 @@ function Carts() {
   const localCart = getLocalCart();
   console.log(localCart, "local");
 
-  const deleteFromCart = (productId) => {
+  const deleteFromLocalCart = (productId) => {
     useCartStore.setState((state) => {
       const updatedArray = state.cart.filter(
         (item) => item.productId !== productId,
@@ -62,6 +75,9 @@ function Carts() {
 
       return { cart: updatedArray };
     });
+  };
+  const deleteFromCartInDb = (productId) => {
+    cartItemDelete(productId);
   };
   const changeQuantity = (productId, amount) => {
     console.log(productId);
@@ -197,12 +213,24 @@ function Carts() {
                           </Button>
                         </div>
 
-                        <div className="ml-2 md:ml-auto text-xl">
-                          <RiDeleteBin6Line
-                            className="cursor-pointer"
-                            onClick={() => deleteFromCart(product?.productId)}
-                          />
-                        </div>
+                        <button
+                          className="ml-2 md:ml-auto text-xl cursor-pointer"
+                          disabled={isDeleting && updatingItem.id === product.productId}
+                          onClick={() => {
+                            setUpdatingItem({ id: product.productId });
+                            user
+                              ? deleteFromCartInDb(product?.productId)
+                              : deleteFromLocalCart(product?.productId);
+                          }}
+                        >
+                          {isDeleting && updatingItem.id === product.productId  ? (
+                            <span className="text-xl font-bold text-slate-400">
+                              <Spinner />
+                            </span>
+                          ) : (
+                            <RiDeleteBin6Line className="" />
+                          )}
+                        </button>
                       </div>
                     </div>
                   ))
@@ -248,7 +276,9 @@ function Carts() {
             </div>
           </div>
         ) : (
-          <div className="flex justify-center h-80 items-center">Cart is empty</div>
+          <div className="flex justify-center h-80 items-center">
+            Cart is empty
+          </div>
         )}
       </div>
     </>

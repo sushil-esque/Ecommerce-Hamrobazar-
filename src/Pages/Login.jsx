@@ -43,7 +43,7 @@ function Login() {
 
       const localCart = getLocalCart();
       console.log(localCart);
-      if (localCart.length > 0) {
+      if (localCart.length > 0 && localCart) {
         const items = localCart.map((item) => ({
           product: item.productId,
           quantity: item.quantity,

@@ -3,8 +3,10 @@ import Loader from "@/Components/Loader";
 import {
   Carousel,
   CarouselContent,
-  CarouselItem
+  CarouselItem,
 } from "@/Components/ui/carousel";
+import useAddToCart from "@/hooks/useAddToCart";
+import { formatPrice } from "@/utils/formatPrice";
 import { Separator } from "@radix-ui/react-select";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -28,6 +30,8 @@ function SingleProduct() {
     queryFn: () => getSingleProduct(id),
     retry: 2,
   });
+  const { handleAddToCart, addingtoCart } = useAddToCart();
+
   const images = useMemo(() => {
     if (!product) return [];
 
@@ -63,7 +67,10 @@ function SingleProduct() {
             >
               <CarouselContent className="m-0  ">
                 {images?.map((img, index) => (
-                  <CarouselItem key={index} className=" w-full flex items-center justify-center">
+                  <CarouselItem
+                    key={index}
+                    className=" w-full flex items-center justify-center"
+                  >
                     <img
                       src={img}
                       className="w-[331px] h-[270px] object-contain rounded-md "
@@ -101,20 +108,20 @@ function SingleProduct() {
           </div>
 
           <div className="border-t-2 mt-3 flex items-center justify-center gap-6 p-4">
-            <div className="flex items-center gap-1 justify-center cursor-pointer">
+            <button
+              className="flex  items-center gap-1 justify-center cursor-pointer"
+              onClick={() => handleAddToCart(product)}
+            >
               <CiBookmark className="text-2xl " />
 
               <div className="text-gray-400">Add to cart</div>
-            </div>
+            </button>
             {/* <div className="w-px h-4 bg-gray-300 mx-2"></div> Gray line */}
             <Separator
               orientation="vertical"
               className="h-5 w-px bg-gray-300"
             />
-            <div className="flex items-center gap-1 justify-center">
-              <TbCurrencyRupeeNepalese />
-              <div className=" font-bold">{product?.price}</div>
-            </div>
+            <div className=" font-bold">रू {formatPrice(product?.price)}</div>
           </div>
         </div>
         <div className="flex flex-col gap-3 border-x-2 p-5 w-[615px] ">

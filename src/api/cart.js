@@ -13,3 +13,8 @@ export const addtoCart = async (cartItems) => {
 export const getCart = async () => {
   return await basicAxios.get(BASE_URL + "cart", { withCredentials: true });
 };
+export const deleteFromCart = async (id) => {
+  return await basicAxios.delete(`${BASE_URL}cart/item/${id}`, {
+    withCredentials: true,
+  });
+};

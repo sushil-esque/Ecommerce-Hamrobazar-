@@ -1,43 +1,13 @@
-import { addtoCart } from "@/api/cart";
-import useAuthStore from "@/store/useAuthStore";
-import { useCartStore } from "@/store/useCartStore";
+import useAddToCart from "@/hooks/useAddToCart";
+import { formatPrice } from "@/utils/formatPrice";
 import { Separator } from "@radix-ui/react-select";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CiBookmarkPlus } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 function LinearCard({ product }) {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const user = useAuthStore((state) => state.user);
-  const addToLocalCart = useCartStore((state) => state.addToLocalCart);
-  const { mutate: cartMutate, isPending: addingtoCart } = useMutation({
-    mutationFn: addtoCart,
-    onSuccess: () => {
-      toast.success("Product added to cart");
-      queryClient.invalidateQueries({ queryKey: ["cart"]});
-    },
-    onError: (err) => {
-      toast.error(err.error || "Failed to add to cart");
-    },
-  });
-  const handleAddToCart = (product) => {
-    if (!user) {
-      addToLocalCart(product);
-      toast.success("Product added to cart");
-    } else {
-      const items = [
-        {
-          product: product._id,
-          quantity: 1,
-        },
-      ];
-      cartMutate(items);
-    }
-  };
-
+  const { handleAddToCart, addingtoCart } = useAddToCart();
   return (
     <div className="">
       <div className=" h-fit mx-0   flex">
@@ -45,7 +15,7 @@ function LinearCard({ product }) {
           <div className="relative w-[8.125rem] shrink-0">
             <div className="">
               <img
-                className="h-[7.625rem] object-cover w-[8rem] bg-inherit rounded-md"
+                className="h-[7.625rem] cursor-pointer object-cover w-[8rem] bg-inherit rounded-md"
                 src={product.image.url}
                 onClick={() => navigate(`/product/${product?._id}`)}
                 alt="Product Image"
@@ -66,7 +36,10 @@ function LinearCard({ product }) {
           </div>
           <div className="w-full">
             <div className="flex items-center justify-between">
-              <h3 className=" text-[0.813rem] font-[600] mb-2 underline decoration-gray-400 underline-offset-4">
+              <h3
+                className=" text-[0.813rem] font-[600] cursor-pointer mb-2 underline decoration-gray-400 underline-offset-4"
+                onClick={() => navigate(`/product/${product?._id}`)}
+              >
                 {product.name}
               </h3>
               <GoShareAndroid />
@@ -80,7 +53,7 @@ function LinearCard({ product }) {
             <div className="flex items-center justify-between w-full">
               <div className="flex h-4 items-center gap-2">
                 <span className="text-[0.813rem] font-[600]  whitespace-nowrap ">
-                  रू {product.price}
+                  रू {formatPrice(product.price)}
                 </span>
                 <Separator className=" bg-black" orientation="vertical" />
                 <span className="text-xs whitespace-nowrap ">
@@ -88,12 +61,13 @@ function LinearCard({ product }) {
                   {product.category.name}
                 </span>
               </div>
-              <div className="">
-                <CiBookmarkPlus
-                  onClick={() => handleAddToCart(product)}
-                  className="text-xl font-bold cursor-pointer"
-                />
-              </div>
+              <button
+                className="cursor-pointer"
+                onClick={() => handleAddToCart(product)}
+                disabled={addingtoCart}
+              >
+                <CiBookmarkPlus className="text-xl font-bold " />
+              </button>
             </div>
           </div>
         </div>
