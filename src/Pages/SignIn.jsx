@@ -1,12 +1,10 @@
-import {  registerUser } from "@/api/login";
+import { registerUser } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
-import useAuthStore from "@/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
 
 function SignUp() {
-  const { setToken } = useAuthStore();
   const navigate = useNavigate();
 
   const { toast } = useToast();

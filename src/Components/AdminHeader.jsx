@@ -1,6 +1,6 @@
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { logout } from "@/api/login";
+import { logout } from "@/api/auth";
 import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
@@ -11,7 +11,7 @@ import { SidebarTrigger } from "./ui/sidebar";
 
 // Example: Solid Icon
 function AdminHeader() {
-  const {  clearToken, user, setUser } = useAuthStore();
+  const { clearToken, user, setUser } = useAuthStore();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { mutate: logoutMutate } = useMutation({
@@ -30,7 +30,7 @@ function AdminHeader() {
   return (
     <div className="flex z-10 items-center py-3 px-2 box-border border-solid border-b-[1px] bg-white">
       <div className="text-black  text-lg w-full   bg-white  flex justify-between  items-center gap-1 sm:gap-2">
-        <div className="flex gap-4"> 
+        <div className="flex gap-4">
           <SidebarTrigger />
 
           <div className="">

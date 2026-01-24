@@ -1,15 +1,18 @@
 import { create } from "zustand";
-const isLoggedInInit = !!localStorage.getItem("token");
-const tokenInit = localStorage.getItem("token");
 
 const useAuthStore = create((set) => ({
-  
-  user : null,
-  setUser: (userData) => set(() => ({ user: userData })),
+  user: null,
+  setUser: (userData) => {
+    set(() => ({ user: userData }));
+  },
+  redirectTo: null,
+  setRedirectTo: (location) => set(() => ({ redirectTo: location })),
+  clearRedirectTo: () => set(() => ({ redirectTo: null })),
   searchPlaceHolder: null,
-  setSearchPlacePlaceHolder: (placeHolder)=> set(()=>({searchPlaceHolder: placeHolder})),
-  token: tokenInit,
-  isLoggedIn: isLoggedInInit,
+  setSearchPlacePlaceHolder: (placeHolder) =>
+    set(() => ({ searchPlaceHolder: placeHolder })),
+  isLoggedIn: false,
+  setIsLoggedIn: (value) => set(() => ({ isLoggedIn: value })),
   count: 1,
   count2: { apple: "ball", cat: "dog" },
   setCount: (value) => set((state) => ({ ...state, count: value })),
@@ -27,17 +30,9 @@ const useAuthStore = create((set) => ({
   },
   dec: () => set((state) => ({ ...state, count: state.count - 1 })),
   reset: () => set((state) => ({ ...state, count: 0 })),
-  setToken: (newToken) => {
-    localStorage.setItem("token", newToken);
+  logout: () => {
     set(() => ({
-      token: newToken,
-      isLoggedIn: !!newToken,
-    }));
-  },
-  clearToken: () => {
-    localStorage.removeItem("token");
-    set(() => ({
-      token: null,
+      user: null,
       isLoggedIn: false,
     }));
   },

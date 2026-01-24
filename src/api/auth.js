@@ -40,6 +40,12 @@ export async function logout(data) {
     withCredentials: true,
   });
 }
+
+export async function me() {
+  return await basicAxios.get("http://localhost:3000/api/me", {
+    withCredentials: true,
+  });
+}
 export { login };
 export { registerUser };
 

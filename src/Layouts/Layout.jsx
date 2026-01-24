@@ -7,16 +7,20 @@ import { useCartStore } from "@/store/useCartStore";
 import useAuthStore from "@/store/useAuthStore";
 import { getCart } from "@/api/cart";
 import { useQuery } from "@tanstack/react-query";
+import { getLocalCart } from "@/utils/cart";
 
 function Layout() {
-  const { cart } = useCartStore();
   const { user } = useAuthStore();
-  const { data: cartData, isLoading: isCartLoading } = useQuery({
+  const { data: cartData } = useQuery({
     queryKey: ["cart"],
     queryFn: getCart,
     enabled: !!user,
   });
+  const localCart = getLocalCart();
+
   useEffect(() => {
+    console.log(user, "USER");
+
     if (user) {
       const dbCartForCartStore =
         cartData?.items?.map((item) => ({
@@ -29,11 +33,9 @@ function Layout() {
         })) || [];
 
       useCartStore.setState({ cart: dbCartForCartStore });
+    } else {
+      useCartStore.setState({ cart: localCart || [] });
     }
-else{
-        useCartStore.setState({ cart: [] });
-
-}
   }, [user, cartData]);
   return (
     <>

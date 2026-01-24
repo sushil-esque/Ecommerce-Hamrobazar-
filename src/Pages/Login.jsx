@@ -1,22 +1,23 @@
 import { addtoCart } from "@/api/cart";
 import useAuthStore from "@/store/useAuthStore";
 import { getLocalCart } from "@/utils/cart";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { login } from "../api/login";
+import { login } from "../api/auth";
 
 function Login() {
-  const { setUser } = useAuthStore();
-
+  const { setUser, redirectTo, clearRedirectTo } = useAuthStore();
+  const queryClient = useQueryClient();
+  const { state } = useLocation();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
- 
+
   const { mutate: cartMutate } = useMutation({
     mutationFn: addtoCart,
     onError: (err) => {
@@ -24,6 +25,7 @@ function Login() {
       toast.error("failed to sync cart");
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
       toast.success("Cart synced Successfully");
       localStorage.removeItem("cart");
     },
@@ -50,10 +52,18 @@ function Login() {
         }));
         cartMutate(items);
       }
- 
 
-      if (data.user.role === "user") navigate("/");
-      else if (data.user.role === "admin") navigate("/AdminDashboard");
+      // Redirect to the page user was trying to access, or default redirect
+      if (state?.redirect) {
+        navigate(state.redirect, { replace: true });
+      } else if (redirectTo) {
+        navigate(redirectTo, { replace: true });
+        clearRedirectTo();
+      } else if (data.user.role === "user") {
+        navigate("/", { replace: true });
+      } else if (data.user.role === "admin") {
+        navigate("/AdminDashboard", { replace: true });
+      }
       toast.success("Login successful");
     },
   });

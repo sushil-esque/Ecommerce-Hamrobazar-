@@ -19,6 +19,8 @@ import Login from "../Pages/Login";
 import Signup from "../Pages/SignIn";
 import CategoryLayout from "@/Layouts/CategoryLayout";
 import AdminLayout from "@/Layouts/AdminLayout";
+import CheckOut from "@/Pages/CheckOut";
+import ProtectedRoute from "@/Components/ProtectedRoute";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -31,11 +33,28 @@ const routes = createBrowserRouter(
         </Route>
 
         <Route path="product/:id" element={<SingleProduct />} />
-        <Route path="login" element={<Login />} />
+        <Route path="login" element={<Login />
+      
+      } />
         <Route path="signup" element={<Signup />} />
         <Route path="cart" element={<Carts />} />
+        <Route
+          path="checkout"
+          element={
+            <ProtectedRoute>
+              <CheckOut />
+            </ProtectedRoute>
+          }
+        />
       </Route>
-      <Route path="/AdminDashboard" element={<AdminLayout />}>
+      <Route
+        path="/AdminDashboard"
+        element={
+          <ProtectedRoute isAdminRoute={true}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<AdminPannel />} />
         <Route path="AddProducts" element={<AddProducts />} />
         <Route path="ViewProducts" element={<ViewProducts />} />
@@ -43,8 +62,8 @@ const routes = createBrowserRouter(
         <Route path="FileUpload" element={<FileUpload />} />
         <Route path="Categories" element={<Categories />} />
       </Route>
-    </>
-  )
+    </>,
+  ),
 );
 function Routes() {
   return (

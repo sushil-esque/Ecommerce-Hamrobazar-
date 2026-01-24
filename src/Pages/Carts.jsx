@@ -16,10 +16,11 @@ import { formatPrice } from "@/utils/formatPrice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 function Carts() {
+  const navigate = useNavigate();
   const { cart } = useCartStore();
   const { user } = useAuthStore();
   const [updatingItem, setUpdatingItem] = useState({ id: null, action: null });
@@ -271,7 +272,7 @@ function Carts() {
                 </span>
               </div>
               <div>
-                <Button>Check out</Button>
+                <Button onClick={()=>navigate("/checkout")}>Check out</Button>
               </div>
             </div>
           </div>

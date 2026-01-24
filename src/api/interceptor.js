@@ -28,9 +28,8 @@ function axiosRejected(e) {
       return Promise.reject(e.response.data);
     }
     if (e.response.status === 401 || e.response.status === 403) {
-      useAuthStore.setState({user:null})
+      useAuthStore.setState({ user: null });
       return Promise.reject(e.response.data);
-
     }
     return e.response.data;
   }

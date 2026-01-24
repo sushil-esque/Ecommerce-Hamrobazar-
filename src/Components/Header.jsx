@@ -1,6 +1,6 @@
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { logout } from "@/api/login";
+import { logout } from "@/api/auth";
 import useAuthStore from "@/store/useAuthStore";
 import { useCartStore } from "@/store/useCartStore";
 import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
@@ -17,6 +17,7 @@ import {
 import { Badge } from "./ui/badge";
 import { toast } from "sonner";
 function Header() {
+  const location = useLocation();
   const { user, setUser } = useAuthStore();
   const { cart } = useCartStore();
   const navigate = useNavigate();
@@ -27,18 +28,19 @@ function Header() {
   const { mutate: logoutMutate } = useMutation({
     mutationFn: logout,
     onError: (err) => {
-      toast.error(err.error)
+      toast.error(err.error);
     },
     onSuccess: (data) => {
       console.log(data);
       useCartStore.setState(() => ({ cart: [] }));
       setUser(null);
-      toast.success( "Logout Successfull" );
-      navigate("/");
+      localStorage.removeItem("user");
+
+      toast.success("Logout Successfull");
+      // navigate("/");
     },
   });
   const { pathname } = useLocation();
- 
 
   useEffect(() => {
     if (!pathname.startsWith("/category"))
@@ -126,7 +128,7 @@ function Header() {
           </button>
         ) : (
           <ul className="flex gap-6 items-center text-md ">
-            <NavLink to="login">
+            <NavLink to="login" state={{ redirect: pathname }} replace>
               <li className="sm:block hidden hover:text-blue-500 transition-colors duration-300 ease-in-out">
                 Login
               </li>
