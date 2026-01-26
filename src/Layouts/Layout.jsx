@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 import BottomNavBar from "../Components/BottomNavBar";
 import Header from "../Components/Header";
 import ScrollToTop from "@/Components/ScrollToTop";
@@ -15,6 +15,7 @@ function Layout() {
     queryKey: ["cart"],
     queryFn: getCart,
     enabled: !!user,
+    retry: 1,
   });
   const localCart = getLocalCart();
 
@@ -39,7 +40,8 @@ function Layout() {
   }, [user, cartData]);
   return (
     <>
-      <ScrollToTop />
+      <ScrollRestoration />
+      {/* <ScrollToTop /> */}
 
       <Header />
       <div className="mt-20">

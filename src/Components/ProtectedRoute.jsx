@@ -3,9 +3,8 @@ import useAuthStore from "@/store/useAuthStore";
 import { useEffect } from "react";
 
 function ProtectedRoute({ children, isAdminRoute = false }) {
-  const { user, setRedirectTo } = useAuthStore();
+  const { user, setRedirectTo, isLoggedIn } = useAuthStore();
   const location = useLocation();
-  const isLoggedIn = !!user;
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -14,6 +13,7 @@ function ProtectedRoute({ children, isAdminRoute = false }) {
   }, [isLoggedIn, location.pathname, setRedirectTo]);
 
   if (!isLoggedIn) {
+    console.log("not logged in");
     return <Navigate to="/login" replace />;
   }
 

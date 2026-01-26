@@ -27,6 +27,8 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
+  FieldLegend,
+  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/Components/ui/input";
 import {
@@ -40,12 +42,19 @@ import { Textarea } from "@/Components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BiUndo } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Spinner } from "@/Components/ui/spinner";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/Components/ui/input-group";
+import { XIcon } from "lucide-react";
 
 function EditProduct() {
   const { id } = useParams();
@@ -95,6 +104,14 @@ function EditProduct() {
       .min(10, { message: "Description must be at least 10 characters" }),
 
     category: z.string().min(1, { message: "Category is required" }),
+    specifications: z.array(
+      z.object({
+        name: z.string().min(1, { message: "Specification Name is required" }),
+        value: z
+          .string()
+          .min(1, { message: "Specification value is required" }),
+      }),
+    ),
   });
   const form = useForm({
     resolver: zodResolver(createProductValidationSchema),
@@ -105,7 +122,12 @@ function EditProduct() {
       description: "",
       category: "",
       image: null,
+      specifications: [{ name: "", value: "" }],
     },
+  });
+  const { fields, append, remove, replace } = useFieldArray({
+    control: form.control,
+    name: "specifications",
   });
   const queryClient = useQueryClient();
   const { mutate: productMutate, isPending } = useMutation({
@@ -116,7 +138,14 @@ function EditProduct() {
     },
     onError: (error) => {
       console.error("Error updating product:", error);
-      toast.error(error.error || "There was an error updating the product.  ");
+      const errorsArray = error?.response?.data?.error || [];
+      if (Array.isArray(errorsArray)) {
+        errorsArray.forEach((err) => toast.error(err.msg));
+      } else {
+        toast.error(
+          error?.message || "There was an error updating the product.",
+        );
+      }
     },
   });
 
@@ -161,6 +190,7 @@ function EditProduct() {
     formData.append("stock", data.stock);
     formData.append("category", data.category);
     formData.append("description", data.description);
+    formData.append("specifications", JSON.stringify(data.specifications));
     if (mainPreview?.file) formData.append("image", mainPreview.file);
 
     if (Array.isArray(images) && images.length > 0) {
@@ -185,7 +215,7 @@ function EditProduct() {
           URL.revokeObjectURL(img.url);
         }
         return i === index ? { ...img, url, file } : img;
-      })
+      }),
     );
   };
   const undoChange = (index) => {
@@ -208,7 +238,7 @@ function EditProduct() {
       }
 
       return prev.map((img, i) =>
-        i === index ? { url: originalImage.url } : img
+        i === index ? { url: originalImage.url } : img,
       );
     });
   };
@@ -232,10 +262,11 @@ function EditProduct() {
         product.images.map((img) => ({
           url: img.url,
           public_id: img.public_id,
-        }))
+        })),
       );
+      replace(product.specifications || []);
     }
-  }, [product, form]);
+  }, [product, form, replace]);
 
   if (productLoading || isLoading || isDeleting) {
     return <Loader />;
@@ -387,6 +418,111 @@ function EditProduct() {
                       </Field>
                     )}
                   />
+                  <FieldSet className="gap-4">
+                    <FieldLegend variant="label">Specifications</FieldLegend>
+
+                    <FieldGroup className="gap-4">
+                      {fields.map((field, index) => (
+                        <div key={field.id} className="flex gap-2">
+                          <Controller
+                            name={`specifications.${index}.name`}
+                            control={form.control}
+                            render={({
+                              field: controllerField,
+                              fieldState,
+                            }) => (
+                              <Field
+                                orientation="horizontal"
+                                data-invalid={fieldState.invalid}
+                              >
+                                <FieldContent>
+                                  <InputGroup>
+                                    <InputGroupInput
+                                      {...controllerField}
+                                      placeholder="name"
+                                      aria-invalid={fieldState.invalid}
+                                    />
+                                    {fields.length > 1 && (
+                                      <InputGroupAddon align="inline-end">
+                                        <InputGroupButton
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon-xs"
+                                          onClick={() => remove(index)}
+                                          aria-label={`Remove email ${
+                                            index + 1
+                                          }`}
+                                        >
+                                          <XIcon />
+                                        </InputGroupButton>
+                                      </InputGroupAddon>
+                                    )}
+                                  </InputGroup>
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </FieldContent>
+                              </Field>
+                            )}
+                          />
+                          <Controller
+                            name={`specifications.${index}.value`}
+                            control={form.control}
+                            render={({
+                              field: controllerField,
+                              fieldState,
+                            }) => (
+                              <Field
+                                orientation="horizontal"
+                                data-invalid={fieldState.invalid}
+                              >
+                                <FieldContent>
+                                  <InputGroup>
+                                    <InputGroupInput
+                                      {...controllerField}
+                                      aria-invalid={fieldState.invalid}
+                                      placeholder="value"
+                                    />
+                                    {fields.length > 1 && (
+                                      <InputGroupAddon align="inline-end">
+                                        <InputGroupButton
+                                          type="button"
+                                          variant="ghost"
+                                          size="icon-xs"
+                                          onClick={() => remove(index)}
+                                          aria-label={`Remove email ${
+                                            index + 1
+                                          }`}
+                                        >
+                                          <XIcon />
+                                        </InputGroupButton>
+                                      </InputGroupAddon>
+                                    )}
+                                  </InputGroup>
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </FieldContent>
+                              </Field>
+                            )}
+                          />
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => append({ name: "", value: "" })}
+                      >
+                        Add another Specification
+                      </Button>
+                    </FieldGroup>
+                    {form.formState.errors.specifications?.root && (
+                      <FieldError
+                        errors={[form.formState.errors.specifications.root]}
+                      />
+                    )}
+                  </FieldSet>
                 </CardContent>
               </Card>
             </div>
@@ -582,7 +718,7 @@ function EditProduct() {
                                 </div>
                               </div>
                             </div>
-                          )
+                          ),
                         )}
                     </div>
                   </div>
@@ -631,8 +767,13 @@ function EditProduct() {
             disabled={isPending}
             onClick={form.handleSubmit(onSubmit)}
           >
-            {isPending ? <span className="flex gap-2"><Spinner/> Saving...</span> :"Save changes"}
-            
+            {isPending ? (
+              <span className="flex gap-2">
+                <Spinner /> Saving...
+              </span>
+            ) : (
+              "Save changes"
+            )}
           </Button>
           <Button
             type="button"
@@ -653,7 +794,7 @@ function EditProduct() {
                 product.images.map((img) => ({
                   url: img.url,
                   public_id: img.public_id,
-                }))
+                })),
               );
               setMainPreview(null);
             }}

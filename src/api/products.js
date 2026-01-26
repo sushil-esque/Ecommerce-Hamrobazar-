@@ -10,7 +10,7 @@ export async function getProducts(params = "") {
   return await basicAxios.get("https://fakestoreapi.com/" + `products` + params);
 }
 
-export async function getAllProducts({ pageParam = 1, limit = 4 }) {
+export async function getAllProducts({ pageParam = 1, limit = 20 }) {
   return await basicAxios.get(
     BASE_URL + `products?page=${pageParam}&limit=${limit}`
   );
@@ -74,6 +74,14 @@ export const getSearchResults = async ({
       `searchProducts?query=${searchQuery}&page=${pageParam}&limit=${limit}`
   );
 };
+
+export const getSimilarProducts = async (id) => {
+  return await basicAxios.get(
+    BASE_URL +
+      `similarProducts/${id}`
+  );
+};
+
 
 
 

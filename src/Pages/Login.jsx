@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { login } from "../api/auth";
 
 function Login() {
-  const { setUser, redirectTo, clearRedirectTo } = useAuthStore();
+  const { setUser, user, redirectTo, clearRedirectTo, setIsLoggedIn } = useAuthStore();
   const queryClient = useQueryClient();
   const { state } = useLocation();
   const {
@@ -40,7 +40,8 @@ function Login() {
     onSuccess: (data) => {
       console.log(data);
       setUser(data.user);
-
+      console.log(user,"user"); 
+      setIsLoggedIn(true);
       // Sync localStorage cart to backend
 
       const localCart = getLocalCart();
@@ -54,14 +55,18 @@ function Login() {
       }
 
       // Redirect to the page user was trying to access, or default redirect
-      if (state?.redirect) {
+      if (state?.redirect && state.redirect !== "/login" && state.redirect !== "/register"  && data.user.role !== "admin") {
+        console.log(state.redirect,"state.redirect");
         navigate(state.redirect, { replace: true });
-      } else if (redirectTo) {
+      } else if (redirectTo && redirectTo !== "/login" && redirectTo !== "/register" && data.user.role !== "admin") {
+        console.log(redirectTo,"redirectTo");
         navigate(redirectTo, { replace: true });
         clearRedirectTo();
-      } else if (data.user.role === "user") {
+      } else if ( data.user.role === "user" && data.user.role !== "admin") {
+        console.log("user");
         navigate("/", { replace: true });
-      } else if (data.user.role === "admin") {
+      } else if (data.user.role === "admin" && data.user.role !== "user") {
+        console.log("admin");
         navigate("/AdminDashboard", { replace: true });
       }
       toast.success("Login successful");

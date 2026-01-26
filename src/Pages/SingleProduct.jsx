@@ -1,4 +1,5 @@
-import { getSingleProduct } from "@/api/products";
+import { getSimilarProducts, getSingleProduct } from "@/api/products";
+import GridCard from "@/Components/GridCard";
 import Loader from "@/Components/Loader";
 import {
   Carousel,
@@ -30,6 +31,16 @@ function SingleProduct() {
     queryFn: () => getSingleProduct(id),
     retry: 2,
   });
+   const {
+    data: similarProducts,
+    isLoading:similarLoading,
+    isError:similarError,
+  } = useQuery({
+    queryKey: ["similarProducts", id],
+    queryFn: () => getSimilarProducts(id),
+    retry: 2,
+  });
+
   const { handleAddToCart, addingtoCart } = useAddToCart();
 
   const images = useMemo(() => {
@@ -42,6 +53,9 @@ function SingleProduct() {
   }, [product]);
 
   console.log(images);
+   const productsGrid = similarProducts?.map((product) => (
+    <GridCard product={product} key={product?._id} />
+  ));
   // useEffect(() => {
   //   if (product)
   //     setImages([...product?.images?.map((img) => img.url), product.image.url]);
@@ -54,7 +68,7 @@ function SingleProduct() {
   }
   return (
     <div className="lg:mx-24 md:mx-4 sm:mx-4 mb-24">
-      <div className="flex sm:gap-5 flex-wrap">
+      <div className="flex sm:gap-5 ">
         <div className="sm:w-[340px] h-full p-5 flex flex-col">
           <div className="flex flex-col mb-8 ">
             <Carousel
@@ -177,6 +191,12 @@ function SingleProduct() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+        <div className="w-[340px] h-full p-5 flex flex-col" >
+          similar products
+          <div className="grid grid-cols-2 gap-4">
+            {productsGrid}
           </div>
         </div>
       </div>

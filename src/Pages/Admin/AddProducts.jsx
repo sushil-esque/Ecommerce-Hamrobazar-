@@ -1,22 +1,8 @@
 import { getCategories } from "@/api/allCategory";
 import {
-  addProduct,
-  deleteImage,
-  editProduct,
-  getSingleProduct,
+  addProduct
 } from "@/api/products";
 import Loader from "@/Components/Loader";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/Components/ui/button";
 import {
   Card,
@@ -54,13 +40,12 @@ import { Textarea } from "@/Components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BiUndo } from "react-icons/bi";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
-import { is } from "zod/v4/locales";
 function AddProduct() {
   const { id } = useParams();
 
@@ -223,14 +208,7 @@ function AddProduct() {
       {console.log(images)}
       {console.log(mainPreview)}
 
-      {/* {!isPending && (
-  <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 backdrop-blur-sm">
-    <div className="flex flex-col items-center gap-2 text-white">
-      <Spinner/>
-      <span className="text-sm">Saving...</span>
-    </div>
-  </div>
-)} */}
+   
       <form
         className=" w-full p-6 mt-[72px] relative"
         onSubmit={form.handleSubmit(onSubmit)}

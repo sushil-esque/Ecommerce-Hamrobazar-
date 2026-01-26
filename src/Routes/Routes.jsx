@@ -33,9 +33,7 @@ const routes = createBrowserRouter(
         </Route>
 
         <Route path="product/:id" element={<SingleProduct />} />
-        <Route path="login" element={<Login />
-      
-      } />
+        <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
         <Route path="cart" element={<Carts />} />
         <Route
