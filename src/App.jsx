@@ -19,21 +19,24 @@ function App() {
     retry: 1,
   });
 
-useEffect(() => {
-  if (isSuccess) {
-    useAuthStore.setState({ user });
-      console.log(useAuthStore.getState().user,"USERRRRrrrr");
-
-  }
-
-  if (isError) {
-    useAuthStore.setState({ user: null });
-  }
-}, [isSuccess, isError, user]);
-
-   if (userLoading) {
-      return <Loader />;
+  useEffect(() => {
+    if (isSuccess) {
+      useAuthStore.setState({ user, isLoggedIn: true, isInitialized: true });
+      console.log(useAuthStore.getState().user, "USERRRRrrrr");
     }
+
+    if (isError) {
+      useAuthStore.setState({
+        user: null,
+        isLoggedIn: false,
+        isInitialized: true,
+      });
+    }
+  }, [isSuccess, isError, user]);
+
+  if (userLoading) {
+    return <Loader />;
+  }
   return (
     <>
       <Toaster position="top-center" />

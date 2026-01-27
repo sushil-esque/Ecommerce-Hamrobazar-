@@ -74,7 +74,7 @@ function Header() {
             }
             setSearchValue("");
           }}
-          className="border border-black rounded-md flex items-center px-6 lg:w-[37rem] md:w-[25rem] w-[20rem]"
+          className="border border-black rounded-md flex items-center px-6 lg:w-[37rem] md:w-[25rem] w-fit"
         >
           <input
             type="search"

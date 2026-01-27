@@ -31,10 +31,10 @@ function SingleProduct() {
     queryFn: () => getSingleProduct(id),
     retry: 2,
   });
-   const {
+  const {
     data: similarProducts,
-    isLoading:similarLoading,
-    isError:similarError,
+    isLoading: similarLoading,
+    isError: similarError,
   } = useQuery({
     queryKey: ["similarProducts", id],
     queryFn: () => getSimilarProducts(id),
@@ -53,7 +53,7 @@ function SingleProduct() {
   }, [product]);
 
   console.log(images);
-   const productsGrid = similarProducts?.map((product) => (
+  const productsGrid = similarProducts?.map((product) => (
     <GridCard product={product} key={product?._id} />
   ));
   // useEffect(() => {
@@ -68,134 +68,141 @@ function SingleProduct() {
   }
   return (
     <div className="lg:mx-24 md:mx-4 sm:mx-4 mb-24">
-      <div className="flex sm:gap-5 ">
-        <div className="sm:w-[340px] h-full p-5 flex flex-col">
-          <div className="flex flex-col mb-8 ">
-            <Carousel
-              setApi={setApi}
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="m-0  ">
-                {images?.map((img, index) => (
-                  <CarouselItem
-                    key={index}
-                    className=" w-full flex items-center justify-center"
-                  >
-                    <img
-                      src={img}
-                      className="w-[331px] h-[270px] object-contain rounded-md "
-                      alt="Ad 1"
-                    />
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              {/* <CarouselPrevious className="left-0" variant="ghost" />
+      <div className="flex sm:gap-5 flex-col xl:flex-row">
+        <div className="md:flex">
+          <div className="md:w-[500px] h-full p-5 flex flex-col">
+            <div className="flex flex-col mb-8 ">
+              <Carousel
+                setApi={setApi}
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent className="m-0  ">
+                  {images?.map((img, index) => (
+                    <CarouselItem
+                      key={index}
+                      className=" w-full flex items-center justify-center"
+                    >
+                      <img
+                        src={img}
+                        className="md:w-[331px] md:h-[270px] w-full object-contain rounded-md "
+                        alt="Ad 1"
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {/* <CarouselPrevious className="left-0" variant="ghost" />
               <CarouselNext className="right-0" variant="ghost" /> */}
-            </Carousel>
-            {/* <img
+              </Carousel>
+              {/* <img
               src={product?.image.url}
               alt="image"
               className="w-[331px] h-[270px] object-contain rounded-md "
             /> */}
-            <div className="mt-2 flex w-full justify-center gap-5 items-center">
-              {images &&
-                images.length > 0 &&
-                images.map((img, idx) => (
-                  <img
-                    key={idx}
-                    className={`h-8 w-8 object-cover rounded-[2px] ${
-                      currentSlide === idx ? "opacity-100" : "opacity-60"
-                    }   `}
-                    src={img}
-                    alt={`Additional Image ${idx + 1}`}
-                    onClick={() => {
-                      setCurrentSlide(idx);
-                      api?.scrollTo(idx);
-                    }}
-                  />
-                ))}
+              <div className="mt-2 flex w-full justify-center gap-5 items-center">
+                {images &&
+                  images.length > 0 &&
+                  images.map((img, idx) => (
+                    <img
+                      key={idx}
+                      className={`h-8 w-8 object-cover rounded-[2px] ${
+                        currentSlide === idx ? "opacity-100" : "opacity-60"
+                      }   `}
+                      src={img}
+                      alt={`Additional Image ${idx + 1}`}
+                      onClick={() => {
+                        setCurrentSlide(idx);
+                        api?.scrollTo(idx);
+                      }}
+                    />
+                  ))}
+              </div>
+            </div>
+
+            <div className="border-t-2 mt-3  flex items-center justify-center gap-6 p-4">
+              <button
+                className="flex w-full md:w-auto  items-center gap-1 justify-center cursor-pointer"
+                onClick={() => handleAddToCart(product)}
+              >
+                <CiBookmark className="text-2xl " />
+
+                <div className="text-gray-400 whitespace-nowrap">
+                  Add to cart
+                </div>
+              </button>
+              {/* <div className="w-px h-4 bg-gray-300 mx-2"></div> Gray line */}
+              <Separator
+                orientation="vertical"
+                className="h-5 w-px bg-gray-300"
+              />
+              <div className=" font-bold w-full md:w-auto flex items-center justify-center gap-1 whitespace-nowrap">
+                {" "}
+                <span>रू</span> <span>{formatPrice(product?.price)}</span>
+              </div>
             </div>
           </div>
+          <div className="flex flex-col gap-3 md:border-x-2 p-5 md:max-w-[615px] ">
+            <div className="text-2xl font-bold ">{product?.name}</div>
 
-          <div className="border-t-2 mt-3 flex items-center justify-center gap-6 p-4">
-            <button
-              className="flex  items-center gap-1 justify-center cursor-pointer"
-              onClick={() => handleAddToCart(product)}
-            >
-              <CiBookmark className="text-2xl " />
-
-              <div className="text-gray-400">Add to cart</div>
-            </button>
-            {/* <div className="w-px h-4 bg-gray-300 mx-2"></div> Gray line */}
-            <Separator
-              orientation="vertical"
-              className="h-5 w-px bg-gray-300"
-            />
-            <div className=" font-bold">रू {formatPrice(product?.price)}</div>
-          </div>
-        </div>
-        <div className="flex flex-col gap-3 border-x-2 p-5 w-[615px] ">
-          <div className="text-2xl font-bold ">{product?.name}</div>
-
-          <div>
-            {/* <div className="text-lg border-y-2 flex justify-between items-center py-2">
+            <div>
+              {/* <div className="text-lg border-y-2 flex justify-between items-center py-2">
               <div>Description</div>
               <div>
                 <GoShareAndroid />
               </div>
             </div> */}
-            <div className="border-b flex justify-between items-center">
-              <div className="flex">
-                <div
-                  className={`text-lg   w-fit  px-4 pb-2 pt-0 cursor-pointer ${
-                    tab === "description" && "border-b-2 border-b-black "
-                  } 
+              <div className="border-b flex justify-between items-center">
+                <div className="flex">
+                  <div
+                    className={`text-lg   w-fit  px-4 pb-2 pt-0 cursor-pointer ${
+                      tab === "description" && "border-b-2 border-b-black "
+                    } 
                  `}
-                  onClick={() => setTab("description")}
-                >
-                  Description
-                </div>
-                <div
-                  className={`text-lg  w-fit  px-4 pb-2 pt-0  cursor-pointer  ${
-                    tab === "reviews" && "border-b-2 border-b-black "
-                  } 
+                    onClick={() => setTab("description")}
+                  >
+                    Description
+                  </div>
+                  <div
+                    className={`text-lg  w-fit  px-4 pb-2 pt-0  cursor-pointer  ${
+                      tab === "reviews" && "border-b-2 border-b-black "
+                    } 
                  `}
-                  onClick={() => setTab("reviews")}
-                >
-                  Reviews
+                    onClick={() => setTab("reviews")}
+                  >
+                    Reviews
+                  </div>
                 </div>
-              </div>
 
-              <GoShareAndroid className="text-xl" />
+                <GoShareAndroid className="text-xl" />
+              </div>
+              {tab === "description" ? (
+                <div className=" py-2">{product?.description}</div>
+              ) : (
+                <div className=" py-2">reviews</div>
+              )}
             </div>
-            {tab === "description" ? (
-              <div className=" py-2">{product?.description}</div>
-            ) : (
-              <div className=" py-2">reviews</div>
-            )}
-          </div>
-          <div>
-            <h3 className="text-lg font-medium mb-5">Specifications</h3>
-            <div className="bg-[#f9f8f9] px-5 py-3">
-              {product?.specifications?.map((spec) => (
-                <div
-                  key={spec._id}
-                  className="flex w-full font-[380] p-1 border-b "
-                >
-                  <div className="w-[30%] ">{spec.name}</div>
-                  <div className="w-[70%]">{spec.value}</div>
-                </div>
-              ))}
+            <div>
+              <h3 className="text-lg font-medium mb-5">Specifications</h3>
+              <div className="bg-[#f9f8f9] px-5 py-3">
+                {product?.specifications?.map((spec) => (
+                  <div
+                    key={spec._id}
+                    className="flex gap-4 w-full font-[380] p-1 border-b "
+                  >
+                    <div className="sm:w-[30%] w-[40%] ">{spec.name}</div>
+                    <div className="sm:w-[70%] w-[60%]">{spec.value}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
-        <div className="w-[340px] h-full p-5 flex flex-col" >
+        <div className=" xs:w-[340px] w-full h-full p-5 flex flex-col">
           similar products
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 xl:grid-cols-2 gap-4">
             {productsGrid}
           </div>
         </div>

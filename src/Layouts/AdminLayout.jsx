@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 
 import { SidebarProvider } from "@/Components/ui/sidebar";
 import AdminSidebar from "@/Components/AdminSidebar";
@@ -7,6 +7,8 @@ import AdminHeader from "@/Components/AdminHeader";
 function AdminLayout() {
   return (
     <SidebarProvider>
+            <ScrollRestoration />
+      
       <AdminSidebar />
 
       <main className="flex-1 flex flex-col h-screen overflow-hidden">

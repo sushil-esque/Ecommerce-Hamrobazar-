@@ -85,15 +85,25 @@ function CategoryWiseProducts() {
     <div className="flex w-full">
       <div className="flex flex-1 w-fit flex-col gap-5 border-x-2 p-4">
         <div className=" text-lg h-fit mx-0  border-b-2 flex justify-between p-4 text-l items-center gap-3 sticky top-[64px] z-10 bg-white">
-          <TbCategory2
+        
+          <div className="flex  gap-2">
+              <TbCategory2
             className="text-2xl block sm:hidden"
             onClick={() => handleToggle()}
           />
-          <span className="truncate">
-            {searchQuery
-              ? `Search results for "${searchQuery}"`
-              : `Category: ${productsData?.pages?.[0]?.categoryName ?? "All"}`}
-          </span>
+          <div className="flex flex-wrap items-center gap-1">
+
+         
+            <span className="truncate">
+              {searchQuery
+                ? `Search results for "${searchQuery}"`
+                : ` ${productsData?.pages?.[0]?.categoryName ?? "All"}`}
+            </span>
+              <span className="text-sm text-gray-500">
+              ({productsData?.pages?.[0]?.total} products)
+            </span>
+             </div>
+          </div>
           {isGrid ? (
             <CiGrid2H
               className="text-xl"

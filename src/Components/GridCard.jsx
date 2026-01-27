@@ -16,7 +16,7 @@ function GridCard({ product }) {
         <div className="border-2 w-full border-transparent rounded-2xl hover:bg-slate-100 hover:border-2 hover:border-blue-300 p-2 flex flex-col gap-2">
           <div className="shrink-0 flex justify-center">
             <img
-              className=" object-cover cursor-pointer h-32 w-full bg-inherit rounded-md"
+              className=" object-contain cursor-pointer h-32 w-full bg-inherit rounded-md"
               src={product.image.url}
               onClick={() => navigate(`/product/${product?._id}`)}
               alt="Product Image"

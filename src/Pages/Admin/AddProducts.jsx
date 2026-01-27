@@ -1,7 +1,5 @@
 import { getCategories } from "@/api/allCategory";
-import {
-  addProduct
-} from "@/api/products";
+import { addProduct } from "@/api/products";
 import Loader from "@/Components/Loader";
 import { Button } from "@/Components/ui/button";
 import {
@@ -89,8 +87,11 @@ function AddProduct() {
         value: z
           .string()
           .min(1, { message: "Specification value is required" }),
-      })
+      }),
     ),
+    tags: z
+      .array(z.string().min(1, { message: "Tag cannot be empty" }).trim())
+      .optional(),
   });
   const form = useForm({
     resolver: zodResolver(createProductValidationSchema),
@@ -103,11 +104,20 @@ function AddProduct() {
       image: null,
       images: [],
       specifications: [{ name: "", value: "" }],
+      tags: [],
     },
   });
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "specifications",
+  });
+  const {
+    fields: tagFields,
+    append: appendTag,
+    remove: removeTag,
+  } = useFieldArray({
+    control: form.control,
+    name: "tags",
   });
   const queryClient = useQueryClient();
   const { mutate: productMutate, isPending } = useMutation({
@@ -155,6 +165,9 @@ function AddProduct() {
     formData.append("category", data.category);
     formData.append("description", data.description);
     formData.append("specifications", JSON.stringify(data.specifications));
+    if (data.tags && data.tags.length > 0) {
+      formData.append("tags", JSON.stringify(data.tags));
+    }
     if (mainPreview?.file) formData.append("image", mainPreview.file);
 
     if (Array.isArray(images) && images.length > 0) {
@@ -180,7 +193,7 @@ function AddProduct() {
           URL.revokeObjectURL(img.url);
         }
         return i === index ? { ...img, url, file } : img;
-      })
+      }),
     );
   };
   const undoChange = (index) => {
@@ -208,7 +221,6 @@ function AddProduct() {
       {console.log(images)}
       {console.log(mainPreview)}
 
-   
       <form
         className=" w-full p-6 mt-[72px] relative"
         onSubmit={form.handleSubmit(onSubmit)}
@@ -457,6 +469,64 @@ function AddProduct() {
                       />
                     )}
                   </FieldSet>
+                  <FieldSet className="gap-4">
+                    <FieldLegend variant="label">Tags</FieldLegend>
+
+                    <FieldGroup className="gap-4">
+                      {tagFields.map((field, index) => (
+                        <div key={field.id} className="flex gap-2">
+                          <Controller
+                            name={`tags.${index}`}
+                            control={form.control}
+                            render={({
+                              field: controllerField,
+                              fieldState,
+                            }) => (
+                              <Field
+                                orientation="horizontal"
+                                data-invalid={fieldState.invalid}
+                              >
+                                <FieldContent>
+                                  <InputGroup>
+                                    <InputGroupInput
+                                      {...controllerField}
+                                      placeholder="Enter tag"
+                                      aria-invalid={fieldState.invalid}
+                                    />
+                                    <InputGroupAddon align="inline-end">
+                                      <InputGroupButton
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon-xs"
+                                        onClick={() => removeTag(index)}
+                                        aria-label={`Remove tag ${index + 1}`}
+                                      >
+                                        <XIcon />
+                                      </InputGroupButton>
+                                    </InputGroupAddon>
+                                  </InputGroup>
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </FieldContent>
+                              </Field>
+                            )}
+                          />
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => appendTag("")}
+                      >
+                        Add Tag
+                      </Button>
+                    </FieldGroup>
+                    {form.formState.errors.tags?.root && (
+                      <FieldError errors={[form.formState.errors.tags.root]} />
+                    )}
+                  </FieldSet>
                 </CardContent>
               </Card>
             </div>
@@ -610,7 +680,7 @@ function AddProduct() {
                                 </div>
                               </div>
                             </div>
-                          )
+                          ),
                         )}
                     </div>
                   </div>

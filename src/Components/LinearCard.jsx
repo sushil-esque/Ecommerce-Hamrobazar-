@@ -45,29 +45,41 @@ function LinearCard({ product }) {
               <GoShareAndroid />
             </div>
 
-            <p className="text-gray-600 text-xs font-medium mb-4">
+            <p className="text-gray-600 hidden sm:block text-xs font-medium mb-4">
               {product.description.length > 200
                 ? `${product.description.slice(0, 200)}...`
                 : product.description}
             </p>
-            <div className="flex items-center justify-between w-full">
+            <p className="text-gray-600 sm:hidden text-xs font-medium mb-4">
+              {product.description.length > 100
+                ? `${product.description.slice(0, 100)}...`
+                : product.description}
+            </p>
+            <div className="sm:flex items-center justify-between w-full">
               <div className="flex h-4 items-center gap-2">
                 <span className="text-[0.813rem] font-[600]  whitespace-nowrap ">
                   रू {formatPrice(product.price)}
                 </span>
                 <Separator className=" bg-black" orientation="vertical" />
-                <span className="text-xs whitespace-nowrap ">
+                <span className="text-xs whitespace-nowrap hidden sm:block ">
                   {" "}
                   {product.category.name}
                 </span>
               </div>
-              <button
+              <div className="flex items-center justify-between">
+                <span className="text-xs whitespace-nowrap sm:hidden block ">
+                  {" "}
+                  {product.category.name}
+                </span>
+                <button
                 className="cursor-pointer"
                 onClick={() => handleAddToCart(product)}
                 disabled={addingtoCart}
               >
                 <CiBookmarkPlus className="text-xl font-bold " />
               </button>
+              </div>
+              
             </div>
           </div>
         </div>

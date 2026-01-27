@@ -13,10 +13,13 @@ const useAuthStore = create((set) => ({
     set(() => ({ searchPlaceHolder: placeHolder })),
   isLoggedIn: false,
   setIsLoggedIn: (value) => set(() => ({ isLoggedIn: value })),
+  isInitialized: false,
+  setIsInitialized: (value) => set(() => ({ isInitialized: value })),
   logout: () => {
     set(() => ({
       user: null,
       isLoggedIn: false,
+      isInitialized: false,
     }));
   },
 }));

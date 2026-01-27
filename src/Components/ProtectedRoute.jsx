@@ -3,14 +3,18 @@ import useAuthStore from "@/store/useAuthStore";
 import { useEffect } from "react";
 
 function ProtectedRoute({ children, isAdminRoute = false }) {
-  const { user, setRedirectTo, isLoggedIn } = useAuthStore();
+  const { user, setRedirectTo, isLoggedIn, isInitialized } = useAuthStore();
   const location = useLocation();
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (isInitialized && !isLoggedIn) {
       setRedirectTo(location.pathname);
     }
-  }, [isLoggedIn, location.pathname, setRedirectTo]);
+  }, [isLoggedIn, isInitialized, location.pathname, setRedirectTo]);
+
+  if (!isInitialized) {
+    return null; // Or a loading spinner
+  }
 
   if (!isLoggedIn) {
     console.log("not logged in");

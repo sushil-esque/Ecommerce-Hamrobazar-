@@ -80,7 +80,7 @@ function CategoryLayout() {
       <button onClick={inc}>one up</button>
     </div> */}
       {categoryData && (
-        <div className="sm:flex h-screen flex-col   bg-white   sticky top-20 hidden lg:w-[360px] w-[200px] ">
+        <div className="sm:flex h-screen flex-col   bg-white   sticky top-20 hidden xl:w-[360px] w-[200px] ">
           <div className="flex items-center gap-2 pl-8 ">
             <div className=" text-3xl">
               <TbCategory2 />

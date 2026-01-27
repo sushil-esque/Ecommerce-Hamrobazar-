@@ -4,8 +4,13 @@ import { deleteProduct, getAllProducts } from "@/api/products";
 import { DataTable } from "@/Components/data-table";
 import Loader from "@/Components/Loader";
 import { toast } from "@/hooks/use-toast";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/Components/ui/button";
 import {
@@ -26,12 +31,20 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { set } from "zod";
 
 export default function ViewProducts() {
-  const[deletingId,setDeletingId]=useState();
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = parseInt(searchParams.get("page")) || 1;
+  const [deletingId, setDeletingId] = useState();
+  const [page, setPage] = useState(initialPage);
+
   const navigate = useNavigate();
-  const { data, isLoading, isFetching, isPlaceholderData} = useQuery({
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    setSearchParams({ page: newPage });
+  };
+  const { data, isLoading, isFetching, isPlaceholderData } = useQuery({
     queryKey: ["products", page],
-    queryFn: () => getAllProducts({ pageParam:page}),
+    queryFn: () => getAllProducts({ pageParam: page }),
     placeholderData: keepPreviousData,
   });
   const queryClient = useQueryClient();
@@ -55,7 +68,7 @@ export default function ViewProducts() {
     },
     onSettled: () => {
       setDeletingId(null);
-    }
+    },
   });
 
   const columns = [
@@ -135,10 +148,11 @@ export default function ViewProducts() {
               onClick={() =>
                 navigate(`/AdminDashboard/editProduct/${productId}`)
               }
-            ><CiEdit />
+            >
+              <CiEdit />
               Edit
             </Button>
-  <AlertDialog>
+            <AlertDialog>
               <AlertDialogTrigger>
                 <Button
                   disabled={isDeleting && deletingId === productId}
@@ -146,7 +160,13 @@ export default function ViewProducts() {
                   variant="outline"
                   className="group hover:bg-red-500 "
                 >
-                  {isDeleting && deletingId === productId ? <span className="flex gap-2"><Spinner/> deleting</span>: <RiDeleteBin5Line className="text-red-500 group-hover:text-white" />}
+                  {isDeleting && deletingId === productId ? (
+                    <span className="flex gap-2">
+                      <Spinner /> deleting
+                    </span>
+                  ) : (
+                    <RiDeleteBin5Line className="text-red-500 group-hover:text-white" />
+                  )}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -170,7 +190,6 @@ export default function ViewProducts() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            
           </div>
         );
       },
@@ -182,25 +201,21 @@ export default function ViewProducts() {
 
   return (
     <div className=" mt-20 mx-10 py-10">
-      <DataTable columns={columns} data={data?.data?? []} />
-    <div className="flex items-center justify-end space-x-2 py-4">
+      <DataTable columns={columns} data={data?.data ?? []} />
+      <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"
-          disabled={page===1}
-          onClick={() => {setPage((prev)=>Math.max(prev-1,1));
-          
-          }}
+          disabled={page === 1}
+          onClick={() => handlePageChange(Math.max(page - 1, 1))}
         >
           Previous
         </Button>
         <Button
           variant="outline"
           size="sm"
-          disabled={isPlaceholderData || !data.nextPage}
-        onClick={() => {setPage((prev)=>prev+1);
-       
-        }}
+          disabled={isPlaceholderData || !data?.nextPage}
+          onClick={() => handlePageChange(page + 1)}
         >
           Next
         </Button>

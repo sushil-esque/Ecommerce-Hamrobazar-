@@ -112,6 +112,9 @@ function EditProduct() {
           .min(1, { message: "Specification value is required" }),
       }),
     ),
+    tags: z
+      .array(z.string().min(1, { message: "Tag cannot be empty" }).trim())
+      .optional(),
   });
   const form = useForm({
     resolver: zodResolver(createProductValidationSchema),
@@ -123,11 +126,21 @@ function EditProduct() {
       category: "",
       image: null,
       specifications: [{ name: "", value: "" }],
+      tags: [],
     },
   });
   const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "specifications",
+  });
+  const {
+    fields: tagFields,
+    append: appendTag,
+    remove: removeTag,
+    replace: replaceTags,
+  } = useFieldArray({
+    control: form.control,
+    name: "tags",
   });
   const queryClient = useQueryClient();
   const { mutate: productMutate, isPending } = useMutation({
@@ -191,6 +204,9 @@ function EditProduct() {
     formData.append("category", data.category);
     formData.append("description", data.description);
     formData.append("specifications", JSON.stringify(data.specifications));
+    if (data.tags && data.tags.length > 0) {
+      formData.append("tags", JSON.stringify(data.tags));
+    }
     if (mainPreview?.file) formData.append("image", mainPreview.file);
 
     if (Array.isArray(images) && images.length > 0) {
@@ -265,8 +281,9 @@ function EditProduct() {
         })),
       );
       replace(product.specifications || []);
+      replaceTags(product.tags || []);
     }
-  }, [product, form, replace]);
+  }, [product, form, replace, replaceTags]);
 
   if (productLoading || isLoading || isDeleting) {
     return <Loader />;
@@ -521,6 +538,64 @@ function EditProduct() {
                       <FieldError
                         errors={[form.formState.errors.specifications.root]}
                       />
+                    )}
+                  </FieldSet>
+                  <FieldSet className="gap-4">
+                    <FieldLegend variant="label">Tags</FieldLegend>
+
+                    <FieldGroup className="gap-4">
+                      {tagFields.map((field, index) => (
+                        <div key={field.id} className="flex gap-2">
+                          <Controller
+                            name={`tags.${index}`}
+                            control={form.control}
+                            render={({
+                              field: controllerField,
+                              fieldState,
+                            }) => (
+                              <Field
+                                orientation="horizontal"
+                                data-invalid={fieldState.invalid}
+                              >
+                                <FieldContent>
+                                  <InputGroup>
+                                    <InputGroupInput
+                                      {...controllerField}
+                                      placeholder="Enter tag"
+                                      aria-invalid={fieldState.invalid}
+                                    />
+                                    <InputGroupAddon align="inline-end">
+                                      <InputGroupButton
+                                        type="button"
+                                        variant="ghost"
+                                        size="icon-xs"
+                                        onClick={() => removeTag(index)}
+                                        aria-label={`Remove tag ${index + 1}`}
+                                      >
+                                        <XIcon />
+                                      </InputGroupButton>
+                                    </InputGroupAddon>
+                                  </InputGroup>
+                                  {fieldState.invalid && (
+                                    <FieldError errors={[fieldState.error]} />
+                                  )}
+                                </FieldContent>
+                              </Field>
+                            )}
+                          />
+                        </div>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => appendTag("")}
+                      >
+                        Add Tag
+                      </Button>
+                    </FieldGroup>
+                    {form.formState.errors.tags?.root && (
+                      <FieldError errors={[form.formState.errors.tags.root]} />
                     )}
                   </FieldSet>
                 </CardContent>
