@@ -1,11 +1,7 @@
 import { basicAxios } from "./interceptor";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export async function getProducts(params = "") {
-  return await basicAxios.get(
-    "https://fakestoreapi.com/" + `products` + params,
-  );
-}
+
 
 export async function getAllProducts({ pageParam = 1, limit = 20 }) {
   return await basicAxios.get(
