@@ -1,13 +1,15 @@
 import { Outlet, ScrollRestoration } from "react-router-dom";
 import BottomNavBar from "../Components/BottomNavBar";
 import Header from "../Components/Header";
-import ScrollToTop from "@/Components/ScrollToTop";
 import { useEffect } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import useAuthStore from "@/store/useAuthStore";
 import { getCart } from "@/api/cart";
 import { useQuery } from "@tanstack/react-query";
 import { getLocalCart } from "@/utils/cart";
+
+import { SidebarProvider, SidebarInset } from "@/Components/ui/sidebar";
+import CategorySidebar from "@/Components/CategorySidebar";
 
 function Layout() {
   const { user } = useAuthStore();
@@ -37,19 +39,21 @@ function Layout() {
     } else {
       useCartStore.setState({ cart: localCart || [] });
     }
-  }, [user, cartData]);
-  return (
-    <>
-      <ScrollRestoration />
-      {/* <ScrollToTop /> */}
+  }, [user, cartData, localCart]);
 
-      <Header />
-      <div className="mt-20">
-        <Outlet />
-      </div>
-      <BottomNavBar />
-      {/* <Footer /> */}
-    </>
+  return (
+    <SidebarProvider  >
+      <ScrollRestoration />
+      <CategorySidebar />
+      <SidebarInset>
+        <Header />
+        <main className="mt-20 px-4 md:px-0">
+          <Outlet />
+        </main>
+        <BottomNavBar />
+        {/* <Footer /> */}
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 

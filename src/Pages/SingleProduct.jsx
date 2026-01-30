@@ -1,11 +1,13 @@
 import { getSimilarProducts, getSingleProduct } from "@/api/products";
 import GridCard from "@/Components/GridCard";
 import Loader from "@/Components/Loader";
+import { Button } from "@/Components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/Components/ui/carousel";
+import { Spinner } from "@/Components/ui/spinner";
 import useAddToCart from "@/hooks/useAddToCart";
 import { formatPrice } from "@/utils/formatPrice";
 import { Separator } from "@radix-ui/react-select";
@@ -13,7 +15,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { CiBookmark } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
-import { TbCurrencyRupeeNepalese } from "react-icons/tb";
 import { useParams } from "react-router-dom";
 
 function SingleProduct() {
@@ -47,8 +48,9 @@ function SingleProduct() {
     if (!product) return [];
 
     return [
-      ...(product.images?.map((img) => img.url) ?? []),
       ...(product.image?.url ? [product.image.url] : []),
+
+      ...(product.images?.map((img) => img.url) ?? []),
     ];
   }, [product]);
 
@@ -67,10 +69,10 @@ function SingleProduct() {
     return <div>Something went wrong</div>;
   }
   return (
-    <div className="lg:mx-24 md:mx-4 sm:mx-4 mb-24">
+    <div className="lg:mx-24 md:mx-4 sm:mx-4 p-2 sm:p-0 mb-24">
       <div className="flex sm:gap-5 flex-col xl:flex-row">
         <div className="md:flex">
-          <div className="md:w-[500px] h-full p-5 flex flex-col">
+          <div className="md:w-[500px]  h-full sm:p-5  flex flex-col">
             <div className="flex flex-col mb-8 ">
               <Carousel
                 setApi={setApi}
@@ -88,7 +90,7 @@ function SingleProduct() {
                     >
                       <img
                         src={img}
-                        className="md:w-[331px] md:h-[270px] w-full object-contain rounded-md "
+                        className="md:w-[331px] md:h-[270px] w-full h-[300px] object-contain rounded-md"
                         alt="Ad 1"
                       />
                     </CarouselItem>
@@ -122,38 +124,33 @@ function SingleProduct() {
               </div>
             </div>
 
-            <div className="border-t-2 mt-3  flex items-center justify-center gap-6 p-4">
-              <button
-                className="flex w-full md:w-auto  items-center gap-1 justify-center cursor-pointer"
+            <div className="border-t-2 mt-3 w-full flex items-center justify-center gap-6 p-4">
+              <Button
+                disabled={addingtoCart}
+                variant="secondary"
+                className="flex min-w-[130px] w-full sm:w-1/2  items-center gap-1 justify-center cursor-pointer"
                 onClick={() => handleAddToCart(product)}
               >
+                { addingtoCart?  <Spinner/> : 
+                <div className="flex items-center justify-center gap-1 w-full">
                 <CiBookmark className="text-2xl " />
-
-                <div className="text-gray-400 whitespace-nowrap">
-                  Add to cart
+                <div className=" whitespace-nowrap">Add to cart</div>
+                </div>}
+              </Button>
+              <Button
+                variant="secondary"
+                className="flex  min-w-[130px] w-full sm:w-1/2 cursor-default items-center gap-1 justify-center "
+              >
+                <div className=" font-bold w-full flex items-center justify-center gap-1 whitespace-nowrap">
+                  <span>रू</span> <span>{formatPrice(product?.price)}</span>
                 </div>
-              </button>
-              {/* <div className="w-px h-4 bg-gray-300 mx-2"></div> Gray line */}
-              <Separator
-                orientation="vertical"
-                className="h-5 w-px bg-gray-300"
-              />
-              <div className=" font-bold w-full md:w-auto flex items-center justify-center gap-1 whitespace-nowrap">
-                {" "}
-                <span>रू</span> <span>{formatPrice(product?.price)}</span>
-              </div>
+              </Button>
             </div>
           </div>
-          <div className="flex flex-col gap-3 md:border-x-2 p-5 md:max-w-[615px] ">
+          <div className="flex flex-col gap-3 md:border-l-2  xl:border-x-2  sm:p-5 md:max-w-[615px] ">
             <div className="text-2xl font-bold ">{product?.name}</div>
 
             <div>
-              {/* <div className="text-lg border-y-2 flex justify-between items-center py-2">
-              <div>Description</div>
-              <div>
-                <GoShareAndroid />
-              </div>
-            </div> */}
               <div className="border-b flex justify-between items-center">
                 <div className="flex">
                   <div
@@ -185,14 +182,16 @@ function SingleProduct() {
               )}
             </div>
             <div>
-              <h3 className="text-lg font-medium mb-5">Specifications</h3>
-              <div className="bg-[#f9f8f9] px-5 py-3">
+              <h3 className="text-lg font-medium mb-3">Specifications</h3>
+              <div className="bg-[#f9f8f9] sm:px-5 py-3">
                 {product?.specifications?.map((spec) => (
                   <div
                     key={spec._id}
                     className="flex gap-4 w-full font-[380] p-1 border-b "
                   >
-                    <div className="sm:w-[30%] w-[40%] ">{spec.name}</div>
+                    <div className="sm:w-[30%] w-[40%] font-medium ">
+                      {spec.name}
+                    </div>
                     <div className="sm:w-[70%] w-[60%]">{spec.value}</div>
                   </div>
                 ))}
@@ -200,9 +199,9 @@ function SingleProduct() {
             </div>
           </div>
         </div>
-        <div className=" xs:w-[340px] w-full h-full p-5 flex flex-col">
-          similar products
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-4 xl:grid-cols-2 gap-4">
+        <div className=" xl:w-[350px] w-full h-full sm:p-2 mt-5 flex flex-col">
+          <h3 className="text-lg font-bold mb-3">Similar Products</h3>
+          <div className="grid grid-cols-2  sm:grid-cols-4 md:grid-cols-4 xl:grid-cols-2 gap-4">
             {productsGrid}
           </div>
         </div>

@@ -9,8 +9,8 @@ function LinearCard({ product }) {
   const navigate = useNavigate();
   const { handleAddToCart, addingtoCart } = useAddToCart();
   return (
-    <div className="">
-      <div className=" h-fit mx-0   flex">
+    <div className="w-full">
+      <div className=" h-fit mx-0 w-full  flex">
         <div className="border-2 w-full border-transparent rounded-2xl hover:bg-slate-100 hover:border-2 hover:border-blue-300 p-2 flex gap-2">
           <div className="relative w-[8.125rem] shrink-0">
             <div className="">

@@ -1,11 +1,14 @@
 import ProductCardSkeleton from "@/Components/ProductCardSkeleton";
-import { Separator } from "@/components/ui/separator";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { CiBookmarkPlus, CiGrid2H } from "react-icons/ci";
-import { GoShareAndroid } from "react-icons/go";
+import { CiGrid2H } from "react-icons/ci";
 import { TbCategory2 } from "react-icons/tb";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  NavLink,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { getCategoryWiseProducts } from "../api/products";
 import { BsGrid } from "react-icons/bs";
 import LinearCard from "@/Components/LinearCard";
@@ -13,6 +16,11 @@ import GridCard from "@/Components/GridCard";
 import { useInView } from "react-intersection-observer";
 import ProductCardSkeletonGrid from "@/Components/ProductCardSkeletonGrid";
 import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
+import { Input } from "@/Components/ui/input";
+import { Slider } from "@/Components/ui/slider";
+import { Button } from "@/Components/ui/button";
+import { ChevronDown } from "lucide-react";
+import { useSidebar } from "@/Components/ui/sidebar";
 function CategoryWiseProducts() {
   // const { data, error, isLoading, isError } = useQuery({
   //   queryKey: ["products"],
@@ -21,8 +29,12 @@ function CategoryWiseProducts() {
   // });
   // console.log(data?.data);
   const { slug } = useParams();
-  const [searchParam] = useSearchParams();
+  const [searchParam, setSearchParam] = useSearchParams();
+
   const searchQuery = searchParam.get("query");
+  const minPrice = searchParam.get("minPrice");
+  const maxPrice = searchParam.get("maxPrice");
+  const [value, setValue] = useState([0, 5000000]);
 
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
@@ -32,6 +44,7 @@ function CategoryWiseProducts() {
   console.log(toggle);
   const [isGrid, setIsGrid] = useState(false);
   const { setSearchPlaceHolder } = useSearchPlaceHolder();
+  const { toggleSidebar } = useSidebar();
 
   const {
     data: productsData,
@@ -46,9 +59,15 @@ function CategoryWiseProducts() {
     isLoadingError,
     isFetchNextPageError,
   } = useInfiniteQuery({
-    queryKey: ["CategoryWiseProducts", slug, searchQuery],
+    queryKey: ["CategoryWiseProducts", slug, searchQuery, minPrice, maxPrice],
     queryFn: ({ pageParam }) =>
-      getCategoryWiseProducts({ categorySlug: slug, pageParam, searchQuery }),
+      getCategoryWiseProducts({
+        categorySlug: slug,
+        pageParam,
+        searchQuery,
+        minPrice,
+        maxPrice,
+      }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => lastPage?.nextPage || undefined,
   });
@@ -83,28 +102,29 @@ function CategoryWiseProducts() {
 
   return (
     <div className="flex w-full">
-      <div className="flex flex-1 w-fit flex-col gap-5 border-x-2 p-4">
-        <div className=" text-lg h-fit mx-0  border-b-2 flex justify-between p-4 text-l items-center gap-3 sticky top-[64px] z-10 bg-white">
-        
-          <div className="flex  gap-2">
-              <TbCategory2
-            className="text-2xl block sm:hidden"
-            onClick={() => handleToggle()}
-          />
-          <div className="flex flex-wrap items-center gap-1">
-
-         
-            <span className="truncate">
-              {searchQuery
-                ? `Search results for "${searchQuery}"`
-                : ` ${productsData?.pages?.[0]?.categoryName ?? "All"}`}
-            </span>
-              <span className="text-sm text-gray-500">
-              ({productsData?.pages?.[0]?.total} products)
-            </span>
-             </div>
+      <div className="flex flex-1 w-fit flex-col gap-5lg:border-x-2 sm:border-r-2 p-4">
+        <div className=" text-lg h-fit mx-0  border-b-2 mb-3 flex flex-col  sticky top-[64px] z-10 bg-white">
+          <div className="hidden sm:block">
+            <Button
+              variant="ghost"
+              onClick={toggleSidebar}
+              className="py-2 px-1"
+            >
+              <TbCategory2 /> Categories <ChevronDown />
+            </Button>
           </div>
-          {isGrid ? (
+          <div className="flex justify-between py-4 pt-2 px-1  gap-2">
+            <div className="flex flex-wrap items-center gap-1">
+              <span className="truncate text-xl">
+                {searchQuery
+                  ? `Search results for "${searchQuery}"`
+                  : ` ${productsData?.pages?.[0]?.categoryName ?? "All"}`}
+              </span>
+              <span className="text-sm text-gray-500">
+                ({productsData?.pages?.[0]?.total} products)
+              </span>
+            </div>
+             {isGrid ? (
             <CiGrid2H
               className="text-xl"
               onClick={() => setIsGrid((prev) => !prev)}
@@ -115,6 +135,8 @@ function CategoryWiseProducts() {
               onClick={() => setIsGrid((prev) => !prev)}
             />
           )}
+          </div>
+         
         </div>
         {isLoading ? (
           Array.from({ length: 5 }).map((_, index) => (
@@ -161,7 +183,80 @@ function CategoryWiseProducts() {
         )}
         <div ref={ref}> </div>
       </div>
-      <div className="w-[40%] hidden lg:block"></div>
+      <div className="w-[30%] sticky top-[64px]  h-fit p-4 hidden sm:block">
+        <h3 className="text-xl font-semibold">Filter</h3>
+        <div className="flex font-semibold gap-2 mt-2">
+          <p>Price Range (in NPR)</p>
+        </div>
+        <div className="flex gap-2 mt-2"></div>
+        <div className="mx-auto grid w-full max-w-xs gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <Input
+              type="number"
+              min={0}
+              placeholder="Min"
+              value={value[0]}
+              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              onChange={(e) => setValue([Number(e.target.value), value[1]])}
+            />
+            <Input
+              type="number"
+              min={0}
+              placeholder="Max"
+              value={value[1]}
+              className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              onChange={(e) => setValue([value[0], Number(e.target.value)])}
+            />
+          </div>
+          <Slider
+            value={value}
+            onValueChange={setValue}
+            min={0}
+            max={5000000}
+            step={1000}
+          />
+          <Button
+            variant="outline"
+            disabled={
+              value[0] === value[1] || value[0] === "" || value[1] === ""
+            }
+            onClick={() => {
+              setSearchParam({
+                minPrice: value[0],
+                maxPrice: value[1],
+              });
+            }}
+          >
+            Apply
+          </Button>
+        </div>
+
+        <div className="mt-8">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-gray-500">
+            <NavLink to="#" className="hover:text-primary transition-colors">
+              Return Policy
+            </NavLink>
+            <NavLink to="#" className="hover:text-primary transition-colors">
+              About Us
+            </NavLink>
+            <NavLink to="#" className="hover:text-primary transition-colors">
+              FAQ
+            </NavLink>
+            <NavLink to="#" className="hover:text-primary transition-colors">
+              Terms of Use
+            </NavLink>
+            <NavLink to="#" className="hover:text-primary transition-colors">
+              Privacy Policy
+            </NavLink>
+            <NavLink to="#" className="hover:text-primary transition-colors">
+              Contact Us
+            </NavLink>
+          </div>
+          <p className="mt-6 text-[10px] text-gray-400">
+            © 2026 Hamrobazar Clone. All rights reserved.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

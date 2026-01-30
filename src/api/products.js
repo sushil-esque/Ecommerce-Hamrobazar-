@@ -1,18 +1,20 @@
 import { axiosWithAuth, basicAxios } from "./interceptor";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-export async function getProduct({id}) {
+export async function getProduct({ id }) {
   return await basicAxios.get("https://fakestoreapi.com/" + `products/` + id);
 }
 async function getUserCart() {
   return await axiosWithAuth.get("https://fakestoreapi.com/" + `carts/1`);
 }
 export async function getProducts(params = "") {
-  return await basicAxios.get("https://fakestoreapi.com/" + `products` + params);
+  return await basicAxios.get(
+    "https://fakestoreapi.com/" + `products` + params,
+  );
 }
 
 export async function getAllProducts({ pageParam = 1, limit = 20 }) {
   return await basicAxios.get(
-    BASE_URL + `products?page=${pageParam}&limit=${limit}`
+    BASE_URL + `products?page=${pageParam}&limit=${limit}`,
   );
 }
 export async function addProduct(data) {
@@ -58,9 +60,13 @@ export const getCategoryWiseProducts = async ({
   limit = 2,
   categorySlug,
   searchQuery,
+  minPrice,
+  maxPrice,
 }) => {
   let url = `categorywiseProducts/${categorySlug}?page=${pageParam}&limit=${limit}`;
   if (searchQuery) url += `&query=${encodeURIComponent(searchQuery)}`;
+  if (minPrice && maxPrice)
+    url += `&minPrice=${encodeURIComponent(minPrice)}&maxPrice=${encodeURIComponent(maxPrice)}`;
   return await basicAxios.get(BASE_URL + url);
 };
 
@@ -71,17 +77,10 @@ export const getSearchResults = async ({
 }) => {
   return await basicAxios.get(
     BASE_URL +
-      `searchProducts?query=${searchQuery}&page=${pageParam}&limit=${limit}`
+      `searchProducts?query=${searchQuery}&page=${pageParam}&limit=${limit}`,
   );
 };
 
 export const getSimilarProducts = async (id) => {
-  return await basicAxios.get(
-    BASE_URL +
-      `similarProducts/${id}`
-  );
+  return await basicAxios.get(BASE_URL + `similarProducts/${id}`);
 };
-
-
-
-

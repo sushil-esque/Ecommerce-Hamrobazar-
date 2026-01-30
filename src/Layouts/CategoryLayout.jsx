@@ -7,6 +7,7 @@ import { IoClose } from "react-icons/io5";
 import { TbCategory2 } from "react-icons/tb";
 import { NavLink, Outlet, useNavigate, useParams } from "react-router-dom";
 import { getCategories } from "../api/allCategory";
+import CategorySkeleton from "@/Components/CategorySkeleton";
 
 function CategoryLayout() {
   // const { data, error, isLoading, isError } = useQuery({
@@ -25,9 +26,9 @@ function CategoryLayout() {
   console.log(toggle);
   const {
     data: categoryData,
-    error: categoryError,
     isLoading: categoryLoading,
     isError: categoryIsError,
+    refetch: categoryRefetch,
   } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
@@ -51,27 +52,7 @@ function CategoryLayout() {
     </li>
   ));
 
-  const sidebar = (
-    <div className="flex h-screen flex-col justify-between border-e bg-white fixed top-0 left-0  w-[60%] shadow-md z-50">
-      <div className="px-4 py-6 ">
-        <div className="flex items-center gap-2 border-b-2  -mx-4 px-3 justify-between ">
-          <div className=" text-3xl">
-            <TbCategory2 />
-          </div>
-          <div className="grid h-10 place-content-center rounded-lg text-lg font-semibold text-black">
-            Category
-          </div>
-          <div>
-            <button onClick={handleToggle} className="text-3xl">
-              <IoClose />
-            </button>
-          </div>
-        </div>
 
-        <ul className="space-y-1">{categories}</ul>
-      </div>
-    </div>
-  );
   return (
     <div className="flex max-w-[1320px] mx-auto lg:mx-24 md:mx-4 sm:mx-4 ">
       {/* <div>
@@ -79,8 +60,22 @@ function CategoryLayout() {
       <button onClick={() => setCount("apple")}>set count</button>
       <button onClick={inc}>one up</button>
     </div> */}
-      {categoryData && (
-        <div className="sm:flex h-screen flex-col   bg-white   sticky top-20 hidden xl:w-[360px] w-[200px] ">
+        {categoryLoading ? (
+        <CategorySkeleton />
+      ) : categoryIsError ? (
+        <div className="sm:flex h-fit flex-col bg-white sticky top-20 hidden xl:w-[360px] w-[200px] border-r items-center justify-center p-4">
+          <p className="text-sm text-red-500 mb-2 text-center text-wrap">
+            Failed to load categories
+          </p>
+          <button
+            onClick={() => categoryRefetch()}
+            className="text-sm underline hover:text-black transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      ) :  (
+        <div className="lg:flex h-screen flex-col   bg-white   sticky top-20 hidden xl:w-[360px] w-[200px] ">
           <div className="flex items-center gap-2 pl-8 ">
             <div className=" text-3xl">
               <TbCategory2 />
@@ -96,8 +91,6 @@ function CategoryLayout() {
           </div>
         </div>
       )}
-
-      {toggle ? sidebar : null}
       <div className="flex flex-col flex-1 ">
         <AdsCarousel />
 
