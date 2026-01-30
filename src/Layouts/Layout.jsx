@@ -45,7 +45,7 @@ function Layout() {
       <CategoryDrawer />
       <div className="flex flex-col flex-1">
         <Header />
-        <main className="mt-20 px-2 md:px-0">
+        <main className="mt-20 mb-20 px-2 md:px-0">
           <Outlet />
         </main>
         <BottomNavBar />

@@ -74,13 +74,13 @@ function Header() {
             }
             setSearchValue("");
           }}
-          className="border border-black rounded-md flex items-center px-6 lg:w-[37rem] md:w-[25rem] w-fit"
+          className="border border-black rounded-md flex items-center px-3 lg:w-[37rem] md:w-[25rem] w-fit"
         >
           <input
             type="search"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            className="px-2 py-1 w-full outline-none"
+            className="px-2 py-1 text-sm sm:text-base w-full outline-none"
             placeholder={searchPlaceHolder}
           />
           <button type="submit">

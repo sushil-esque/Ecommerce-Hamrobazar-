@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 
 function ProductCardSkeleton() {
   return (
-    <div className=" animate-pulse">
+    <div className="w-full animate-pulse">
       <div className="flex">
         <div className="border-2 w-full rounded-2xl p-2 flex gap-2">
 
@@ -29,11 +29,10 @@ function ProductCardSkeleton() {
             <Skeleton className="h-3 w-[90%]" />
             <Skeleton className="h-3 w-[70%]" />
 
-            <div className="flex justify-between items-center">
-              <div className="flex gap-2 items-center">
-                <Skeleton className="h-4 w-14" />
-                <Skeleton className="h-4 w-px" />
-                <Skeleton className="h-3 w-20" />
+            <div className="flex justify-between ">
+              <div className="flex w-full  gap-2 flex-col ">
+                <Skeleton className="h-3 w-[30%]" />
+                <Skeleton className="h-3 w-[40%]" />
               </div>
 
               <Skeleton className="h-5 w-5 rounded-full" />

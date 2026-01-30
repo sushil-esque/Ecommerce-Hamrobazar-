@@ -4,6 +4,7 @@ import { Separator } from "@radix-ui/react-select";
 import { CiBookmarkPlus } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from "./ui/spinner";
 
 function GridCard({ product }) {
   const navigate = useNavigate();
@@ -48,11 +49,11 @@ function GridCard({ product }) {
                 <Separator className="bg-black" orientation="vertical" />
               </div>
               <button
-                className="cursor-pointer"
+                className="cursor-pointer h-[20px] w-[20px] flex justify-center items-center"
                 onClick={() => handleAddToCart(product)}
                 disabled={addingtoCart}
               >
-                <CiBookmarkPlus className="text-xl font-bold" />
+                {addingtoCart ? <Spinner /> : <CiBookmarkPlus className="text-xl font-bold" />}
               </button>
             </div>
           </div>

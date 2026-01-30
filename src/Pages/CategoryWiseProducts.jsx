@@ -21,6 +21,17 @@ import { Slider } from "@/Components/ui/slider";
 import { Button } from "@/Components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { useSidebarStore } from "@/store/useSidebarStore";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/Components/ui/drawer";
+
+import { Skeleton } from "@/Components/ui/skeleton";
 
 function CategoryWiseProducts() {
   // const { data, error, isLoading, isError } = useQuery({
@@ -35,7 +46,7 @@ function CategoryWiseProducts() {
   const searchQuery = searchParam.get("query");
   const minPrice = searchParam.get("minPrice");
   const maxPrice = searchParam.get("maxPrice");
-  const [value, setValue] = useState([0, 5000000]);
+  const [value, setValue] = useState([0, 500000]);
 
   const [toggle, setToggle] = useState(false);
   const navigate = useNavigate();
@@ -106,9 +117,9 @@ function CategoryWiseProducts() {
 
   return (
     <div className="flex w-full">
-      <div className="flex flex-1 w-fit flex-col gap-5lg:border-x-2 sm:border-r-2 p-4">
+      <div className="flex flex-1 w-fit flex-col gap-5  lg:border-x-2 sm:border-r-2 p-4">
         <div className=" text-lg h-fit mx-0  border-b-2 mb-3 flex flex-col  sticky top-[64px] z-10 bg-white">
-          <div className="block lg:hidden">
+          <div className=" hidden sm:block lg:hidden">
             <Button
               variant="ghost"
               onClick={toggleSidebar}
@@ -118,16 +129,21 @@ function CategoryWiseProducts() {
             </Button>
           </div>
           <div className="flex justify-between py-4 pt-2 px-1  gap-2">
-            <div className="flex flex-wrap items-center gap-1">
-              <span className="truncate text-xl">
-                {searchQuery
-                  ? `Search results for "${searchQuery}"`
-                  : ` ${productsData?.pages?.[0]?.categoryName ?? "All"}`}
-              </span>
-              <span className="text-sm text-gray-500">
-                ({productsData?.pages?.[0]?.total} products)
-              </span>
-            </div>
+            {isLoading ? (
+              <Skeleton className="w-[200px] h-[20px]" />
+            ) : (
+              <div className="flex flex-wrap items-center gap-1">
+                <span className="truncate text-xl">
+                  {searchQuery
+                    ? `Search results for "${searchQuery}"`
+                    : ` ${productsData?.pages?.[0]?.categoryName}`}
+                </span>
+                <span className="text-sm text-gray-500">
+                  ({productsData?.pages?.[0]?.total} products)
+                </span>
+              </div>
+            )}
+
             {isGrid ? (
               <CiGrid2H
                 className="text-xl"
@@ -139,6 +155,91 @@ function CategoryWiseProducts() {
                 onClick={() => setIsGrid((prev) => !prev)}
               />
             )}
+          </div>
+          <div className=" block sm:hidden">
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="secondary" className="py-2 px-1 mb-4">
+                  Apply Filters <ChevronDown />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle>Filters</DrawerTitle>
+                </DrawerHeader>
+
+                <div className="flex justify-center font-semibold gap-2 ">
+                  <p>Price Range (in NPR)</p>
+                </div>
+                <div className="flex gap-2 mt-2"></div>
+                <div className="mx-auto grid w-full max-w-xs gap-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder="Min"
+                      value={value[0]}
+                      className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      onChange={(e) => {
+                        const val = Math.min(
+                          500000,
+                          Math.max(0, Number(e.target.value)),
+                        );
+                        setValue([val, value[1]]);
+                      }}
+                      onBlur={() => {
+                        if (value[0] > value[1]) setValue([value[1], value[0]]);
+                      }}
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder="Max"
+                      value={value[1]}
+                      className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      onChange={(e) => {
+                        const val = Math.min(
+                          500000,
+                          Math.max(0, Number(e.target.value)),
+                        );
+                        setValue([value[0], val]);
+                      }}
+                      onBlur={() => {
+                        if (value[0] > value[1]) setValue([value[1], value[0]]);
+                      }}
+                    />
+                  </div>
+                  <Slider
+                    value={value}
+                    onValueChange={setValue}
+                    min={0}
+                    max={500000}
+                    step={1000}
+                  />
+                </div>
+
+                <DrawerFooter>
+                  <DrawerClose asChild>
+                    <Button
+                      variant="outline"
+                      disabled={
+                        value[0] === value[1] ||
+                        value[0] === "" ||
+                        value[1] === ""
+                      }
+                      onClick={() => {
+                        setSearchParam({
+                          minPrice: value[0],
+                          maxPrice: value[1],
+                        });
+                      }}
+                    >
+                      Apply
+                    </Button>
+                  </DrawerClose>
+                </DrawerFooter>
+              </DrawerContent>
+            </Drawer>
           </div>
         </div>
         {isLoading ? (
@@ -154,11 +255,13 @@ function CategoryWiseProducts() {
           </div>
         ) : !isGrid ? (
           <>
-            {products}
-            {isFetchingNextPage &&
-              Array.from({ length: 5 }).map((_, index) => (
-                <ProductCardSkeleton key={index} />
-              ))}
+            <div className="flex flex-col gap-3">
+              {products}
+              {isFetchingNextPage &&
+                Array.from({ length: 5 }).map((_, index) => (
+                  <ProductCardSkeleton key={index} />
+                ))}
+            </div>
           </>
         ) : (
           <>
@@ -200,7 +303,16 @@ function CategoryWiseProducts() {
               placeholder="Min"
               value={value[0]}
               className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onChange={(e) => setValue([Number(e.target.value), value[1]])}
+              onChange={(e) => {
+                const val = Math.min(
+                  500000,
+                  Math.max(0, Number(e.target.value)),
+                );
+                setValue([val, value[1]]);
+              }}
+              onBlur={() => {
+                if (value[0] > value[1]) setValue([value[1], value[0]]);
+              }}
             />
             <Input
               type="number"
@@ -208,14 +320,23 @@ function CategoryWiseProducts() {
               placeholder="Max"
               value={value[1]}
               className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              onChange={(e) => setValue([value[0], Number(e.target.value)])}
+              onChange={(e) => {
+                const val = Math.min(
+                  500000,
+                  Math.max(0, Number(e.target.value)),
+                );
+                setValue([value[0], val]);
+              }}
+              onBlur={() => {
+                if (value[0] > value[1]) setValue([value[1], value[0]]);
+              }}
             />
           </div>
           <Slider
             value={value}
             onValueChange={setValue}
             min={0}
-            max={5000000}
+            max={500000}
             step={1000}
           />
           <Button

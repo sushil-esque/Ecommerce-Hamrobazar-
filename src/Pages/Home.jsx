@@ -23,7 +23,6 @@ function Home() {
   const [isGrid, setIsGrid] = useState(false);
   const { setSearchPlaceHolder } = useSearchPlaceHolder();
 
-
   const { toggleCategoryDrawer } = useSidebarStore();
   const toggleSidebar = () => {
     toggleCategoryDrawer();
@@ -69,8 +68,6 @@ function Home() {
     setSearchPlaceHolder("Search for anything");
   }, []);
 
-
-
   const products = allProducts?.map((product) => (
     <LinearCard product={product} key={product?._id} />
   ));
@@ -80,14 +77,15 @@ function Home() {
 
   return (
     <div className="flex max-w-[1320px] mx-auto lg:mx-24 md:mx-4 sm:mx-4 ">
-     <Categories/>
+      <Categories />
 
       <div className="flex  flex-col flex-1 ">
         <AdsCarousel />
         <div className="flex w-full">
           <div className="flex flex-1 w-fit flex-col  lg:border-x-2 sm:border-r-2 p-4">
             <div className=" text-lg h-fit mx-0  border-b-2 mb-3 flex flex-col  sticky top-[64px] z-10 bg-white">
-              <div className=" lg:hidden">
+              <div className=" hidden sm:block lg:hidden">
+               
                 <Button
                   variant="ghost"
                   onClick={() => {
