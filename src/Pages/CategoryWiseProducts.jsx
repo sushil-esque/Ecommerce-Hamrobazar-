@@ -20,7 +20,8 @@ import { Input } from "@/Components/ui/input";
 import { Slider } from "@/Components/ui/slider";
 import { Button } from "@/Components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { useSidebar } from "@/Components/ui/sidebar";
+import { useSidebarStore } from "@/store/useSidebarStore";
+
 function CategoryWiseProducts() {
   // const { data, error, isLoading, isError } = useQuery({
   //   queryKey: ["products"],
@@ -44,7 +45,10 @@ function CategoryWiseProducts() {
   console.log(toggle);
   const [isGrid, setIsGrid] = useState(false);
   const { setSearchPlaceHolder } = useSearchPlaceHolder();
-  const { toggleSidebar } = useSidebar();
+  const { toggleCategoryDrawer } = useSidebarStore();
+  const toggleSidebar = () => {
+    toggleCategoryDrawer();
+  };
 
   const {
     data: productsData,
@@ -104,7 +108,7 @@ function CategoryWiseProducts() {
     <div className="flex w-full">
       <div className="flex flex-1 w-fit flex-col gap-5lg:border-x-2 sm:border-r-2 p-4">
         <div className=" text-lg h-fit mx-0  border-b-2 mb-3 flex flex-col  sticky top-[64px] z-10 bg-white">
-          <div className="hidden sm:block">
+          <div className="block lg:hidden">
             <Button
               variant="ghost"
               onClick={toggleSidebar}
@@ -124,19 +128,18 @@ function CategoryWiseProducts() {
                 ({productsData?.pages?.[0]?.total} products)
               </span>
             </div>
-             {isGrid ? (
-            <CiGrid2H
-              className="text-xl"
-              onClick={() => setIsGrid((prev) => !prev)}
-            />
-          ) : (
-            <BsGrid
-              className="text-xl"
-              onClick={() => setIsGrid((prev) => !prev)}
-            />
-          )}
+            {isGrid ? (
+              <CiGrid2H
+                className="text-xl"
+                onClick={() => setIsGrid((prev) => !prev)}
+              />
+            ) : (
+              <BsGrid
+                className="text-xl"
+                onClick={() => setIsGrid((prev) => !prev)}
+              />
+            )}
           </div>
-         
         </div>
         {isLoading ? (
           Array.from({ length: 5 }).map((_, index) => (

@@ -13,7 +13,6 @@ import {
   Route,
 } from "react-router";
 import { RouterProvider } from "react-router-dom";
-import Layout from "../Layouts/Layout";
 import Home from "../Pages/Home";
 import Login from "../Pages/Login";
 import Signup from "../Pages/SignIn";
@@ -21,6 +20,7 @@ import CategoryLayout from "@/Layouts/CategoryLayout";
 import AdminLayout from "@/Layouts/AdminLayout";
 import CheckOut from "@/Pages/CheckOut";
 import ProtectedRoute from "@/Components/ProtectedRoute";
+import Layout from "@/Layouts/Layout";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(

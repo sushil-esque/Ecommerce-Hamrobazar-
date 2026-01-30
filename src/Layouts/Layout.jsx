@@ -7,9 +7,7 @@ import useAuthStore from "@/store/useAuthStore";
 import { getCart } from "@/api/cart";
 import { useQuery } from "@tanstack/react-query";
 import { getLocalCart } from "@/utils/cart";
-
-import { SidebarProvider, SidebarInset } from "@/Components/ui/sidebar";
-import CategorySidebar from "@/Components/CategorySidebar";
+import CategoryDrawer from "@/Components/CategoryDrawer";
 
 function Layout() {
   const { user } = useAuthStore();
@@ -42,18 +40,17 @@ function Layout() {
   }, [user, cartData, localCart]);
 
   return (
-    <SidebarProvider  >
+    <>
       <ScrollRestoration />
-      <CategorySidebar />
-      <SidebarInset>
+      <CategoryDrawer />
+      <div className="flex flex-col flex-1">
         <Header />
-        <main className="mt-20 px-4 md:px-0">
+        <main className="mt-20 px-2 md:px-0">
           <Outlet />
         </main>
         <BottomNavBar />
-        {/* <Footer /> */}
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </>
   );
 }
 

@@ -1,11 +1,6 @@
-import { axiosWithAuth, basicAxios } from "./interceptor";
+import { basicAxios } from "./interceptor";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-export async function getProduct({ id }) {
-  return await basicAxios.get("https://fakestoreapi.com/" + `products/` + id);
-}
-async function getUserCart() {
-  return await axiosWithAuth.get("https://fakestoreapi.com/" + `carts/1`);
-}
+
 export async function getProducts(params = "") {
   return await basicAxios.get(
     "https://fakestoreapi.com/" + `products` + params,
@@ -57,7 +52,7 @@ export const deleteProduct = async (productId) => {
 
 export const getCategoryWiseProducts = async ({
   pageParam = 1,
-  limit = 2,
+  limit = 5,
   categorySlug,
   searchQuery,
   minPrice,

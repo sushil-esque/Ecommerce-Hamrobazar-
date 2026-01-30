@@ -42,10 +42,10 @@ function AdminSidebar() {
 
   return (
     <>
-      <Sidebar className="">
+      <Sidebar collapsible="icon" className="">
         <SidebarContent className="bg-white">
           <SidebarGroup>
-            <SidebarGroupLabel>Application</SidebarGroupLabel>
+            <SidebarGroupLabel>Admin Dashboard</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => (
