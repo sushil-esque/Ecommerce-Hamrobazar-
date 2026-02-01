@@ -1,12 +1,15 @@
 import { getSimilarProducts, getSingleProduct } from "@/api/products";
 import GridCard from "@/Components/GridCard";
 import Loader from "@/Components/Loader";
+import ProductCardSkeletonGrid from "@/Components/ProductCardSkeletonGrid";
+import SingleProductSkeleton from "@/Components/SingleProductSkeleton";
 import { Button } from "@/Components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/Components/ui/carousel";
+import { Skeleton } from "@/Components/ui/skeleton";
 import { Spinner } from "@/Components/ui/spinner";
 import useAddToCart from "@/hooks/useAddToCart";
 import { formatPrice } from "@/utils/formatPrice";
@@ -62,17 +65,16 @@ function SingleProduct() {
   //   if (product)
   //     setImages([...product?.images?.map((img) => img.url), product.image.url]);
   // }, [product]);
-  if (isLoading) {
-    return <Loader />;
-  }
+
   if (isError) {
     return <div>Something went wrong</div>;
   }
   return (
     <div className="lg:mx-24 md:mx-4 sm:mx-4 p-2 sm:p-0 mb-24">
       <div className="flex sm:gap-5 flex-col xl:flex-row">
-        <div className="md:flex">
-          <div className="md:w-[500px]  h-full sm:p-5  flex flex-col">
+        {
+          isLoading ? <SingleProductSkeleton/> : <div className="md:flex xl:w-3/4">
+          <div className="md:w-[500px] w-full  h-full sm:p-5  flex flex-col">
             <div className="flex flex-col mb-8 ">
               <Carousel
                 setApi={setApi}
@@ -147,10 +149,10 @@ function SingleProduct() {
               </Button>
             </div>
           </div>
-          <div className="flex flex-col gap-3 md:border-l-2  xl:border-x-2  sm:p-5 md:max-w-[615px] ">
+          <div className="flex flex-col w-full gap-3 md:border-l-2  xl:border-x-2  sm:p-5  ">
             <div className="text-2xl font-bold ">{product?.name}</div>
 
-            <div>
+            <div className="">
               <div className="border-b flex justify-between items-center">
                 <div className="flex">
                   <div
@@ -176,9 +178,9 @@ function SingleProduct() {
                 <GoShareAndroid className="text-xl" />
               </div>
               {tab === "description" ? (
-                <div className=" py-2">{product?.description}</div>
+                <div className=" py-2 ">{product?.description}</div>
               ) : (
-                <div className=" py-2">reviews</div>
+                <div className=" py-2 ">reviews</div>
               )}
             </div>
             <div>
@@ -199,10 +201,15 @@ function SingleProduct() {
             </div>
           </div>
         </div>
-        <div className=" xl:w-[350px] w-full h-full sm:p-2 mt-5 flex flex-col">
-          <h3 className="text-lg font-bold mb-3">Similar Products</h3>
+        }
+        
+        <div className=" xl:w-1/4 w-full h-full sm:p-2 mt-5 flex flex-col">
+          
+          {
+            similarLoading || isLoading ? <Skeleton className="w-[160px] h-[20px]"/> :<h3 className="text-lg font-bold mb-3">Similar Products</h3>
+          }
           <div className="grid grid-cols-2  sm:grid-cols-4 md:grid-cols-4 xl:grid-cols-2 gap-4">
-            {productsGrid}
+            { isLoading || similarLoading  ?  Array.from({length:4}).map((_,i)=> <ProductCardSkeletonGrid key={i}/>): productsGrid}
           </div>
         </div>
       </div>

@@ -1,23 +1,30 @@
 import { checkout } from "@/api/order";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/Components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/Components/ui/breadcrumb";
 import { Button } from "@/Components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import {
-    Field,
-    FieldContent,
-    FieldDescription,
-    FieldError,
-    FieldGroup,
-    FieldLabel,
-    FieldLegend,
-    FieldSet,
-    FieldTitle,
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+  FieldTitle,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
@@ -30,11 +37,20 @@ import { Controller, useForm } from "react-hook-form";
 import { RiInformationFill } from "react-icons/ri";
 import { NavLink } from "react-router-dom";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
 import z from "zod";
 
 function CheckOut() {
   const { cart } = useCartStore();
   const queryClient = useQueryClient();
+
+  function truncateString(str, num) {
+    if (!str) return "";
+    if (str.length <= num) {
+      return str;
+    }
+    return str.slice(0, num) + "...";
+  }
   const { mutate: checkoutMutate, isPending } = useMutation({
     mutationFn: checkout,
     onSuccess: () => {
@@ -90,28 +106,28 @@ function CheckOut() {
   };
   return (
     <div className="max-w-[1320px] mx-auto lg:mx-24 md:mx-4 sm:mx-4  ">
-           <Breadcrumb className="mb-5">
-                  <BreadcrumbList>
-                    <BreadcrumbItem>
-                      <NavLink to={"/"}>
-                        <BreadcrumbLink>Home</BreadcrumbLink>
-                      </NavLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                     <BreadcrumbItem>
-                      <NavLink to={"/cart"}>
-                        <BreadcrumbLink>Cart</BreadcrumbLink>
-                      </NavLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-        
-                    <BreadcrumbItem>
-                      <BreadcrumbPage>Check Out</BreadcrumbPage>
-                    </BreadcrumbItem>
-                  </BreadcrumbList>
-                </Breadcrumb>
-      <div className="flex gap-8">
-        <Card className="w-full sm:max-w-[50%]">
+      <Breadcrumb className="mb-5">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <NavLink to={"/"}>
+              <BreadcrumbLink>Home</BreadcrumbLink>
+            </NavLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <NavLink to={"/cart"}>
+              <BreadcrumbLink>Cart</BreadcrumbLink>
+            </NavLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+
+          <BreadcrumbItem>
+            <BreadcrumbPage>Check Out</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+      <div className="flex gap-10 flex-col md:flex-row">
+        <Card className="w-full md:w-[50%] h-fit ">
           <CardHeader>
             <CardTitle>Shipping Address</CardTitle>
             {/* <CardDescription>
@@ -213,46 +229,62 @@ function CheckOut() {
             </form>
           </CardContent>
         </Card>
-        <div className="flex flex-col w-full lg:w-[50%] md:w-[500px] sm:w-full gap-8">
+        <div className="flex flex-col w-full md:w-[50%]  sm:w-full gap-8">
           <Card className="">
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
             </CardHeader>
             {/* <div className="text-xl">Order Summary</div> */}
-            <CardContent>
-              <div className="flex flex-col gap-4 mt-3 ">
+            <CardContent className="pt-6">
+              <div className="flex flex-col gap-4 mb-6 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                 {cart.map((product) => (
                   <div
                     key={product.productId}
-                    className="border-b flex justify-between"
+                    className="flex justify-between items-start gap-4 text-sm"
                   >
-                    <div> {product.name} </div>
-                    <div>
-                      {product.quantity} items = रू{" "}
-                      {formatPrice(product.price * product.quantity)}
+                    <div className="text-slate-600 flex-1 leading-snug">
+                      {truncateString(product.name, 60)}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="font-semibold text-slate-900">
+                        रू {formatPrice(product.price * product.quantity)}
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        {product.quantity} × रू {formatPrice(product.price)}
+                      </div>
                     </div>
                   </div>
                 ))}
-                <div className="border-b flex justify-between">
-                  <div className="font-semibold">Delivery Charge </div>
-                  <div className="font-semibold">रू {formatPrice(100)}</div>
-                </div>
               </div>
 
-              <div className="mt-3 font-bold">
-                Grand Total ={" "}
-                <span className="text-3xl font-normal">
-                  {" "}
-                  रू
-                  {formatPrice(
-                    cart?.reduce(
-                      (acc, product) => acc + product.price * product.quantity,
-                      0,
-                    ) + 100,
-                  )}
-                </span>
+              <Separator className="mb-6" />
+
+              <div className="space-y-3">
+                <div className="flex justify-between text-slate-600">
+                  <span>Subtotal</span>
+                  <span>
+                    रू{" "}
+                    {formatPrice(
+                      cart?.reduce((acc, p) => acc + p.price * p.quantity, 0),
+                    )}
+                  </span>
+                </div>
+                <div className="flex justify-between text-slate-600">
+                  <span>Delivery Charge</span>
+                  <span>रू {formatPrice(100)}</span>
+                </div>
+                <Separator className="my-2" />
+                <div className="flex justify-between items-end pt-2">
+                  <span className="text-lg font-bold">Grand Total</span>
+                  <span className="text-2xl font-extrabold">
+                    रू{" "}
+                    {formatPrice(
+                      cart?.reduce((acc, p) => acc + p.price * p.quantity, 0) +
+                        100,
+                    )}
+                  </span>
+                </div>
               </div>
-              <div></div>
             </CardContent>
           </Card>
           <Card>

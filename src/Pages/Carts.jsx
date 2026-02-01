@@ -18,6 +18,7 @@ import { useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Separator } from "@/components/ui/separator";
 
 function Carts() {
   const navigate = useNavigate();
@@ -122,7 +123,7 @@ function Carts() {
         </Breadcrumb>
         {cart.length > 0 ? (
           <div className="flex gap-10 flex-col md:flex-row ">
-            <div className=" flex flex-col gap-3 lg:w-[50%] md:w-[500px] w-full sm:w-full">
+            <div className=" flex flex-col gap-3 md:w-[50%]  w-full sm:w-full">
               <div className="flex flex-col gap-4 bg-white shadow-sm border border-slate-200 rounded-lg">
                 <div className="flex justify-between "></div>
                 {cart?.length > 0 ? (
@@ -216,7 +217,9 @@ function Carts() {
 
                         <button
                           className="ml-2 md:ml-auto text-xl cursor-pointer"
-                          disabled={isDeleting && updatingItem.id === product.productId}
+                          disabled={
+                            isDeleting && updatingItem.id === product.productId
+                          }
                           onClick={() => {
                             setUpdatingItem({ id: product.productId });
                             user
@@ -224,7 +227,8 @@ function Carts() {
                               : deleteFromLocalCart(product?.productId);
                           }}
                         >
-                          {isDeleting && updatingItem.id === product.productId  ? (
+                          {isDeleting &&
+                          updatingItem.id === product.productId ? (
                             <span className="text-xl font-bold text-slate-400">
                               <Spinner />
                             </span>
@@ -240,40 +244,49 @@ function Carts() {
                 )}
               </div>
             </div>
-            <div className=" flex sticky top-20 h-fit bg-white shadow-sm border border-slate-200 rounded-lg  p-6 w-full lg:w-[50%] md:w-[500px] sm:w-full flex-col">
-              <div className="text-xl">Order Summary</div>
+            <div className="flex sticky top-24 h-fit md:w-[50%] bg-white shadow-md border border-slate-100 rounded-xl p-8 w-full  flex-col">
+              <h2 className="text-2xl font-bold mb-6">Order Summary</h2>
 
-              <div className="flex flex-col gap-4 mt-3 ">
+              <div className="flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                 {cart.map((product) => (
                   <div
                     key={product.productId}
-                    className="border-b flex justify-between"
+                    className="flex justify-between items-start gap-4 text-sm"
                   >
-                    <div> {truncateString(product.name, 1000)} </div>
-                    <div>
-                      {product.quantity} items = रू{" "}
-                      {formatPrice(product.price * product.quantity)}
+                    <div className="text-slate-600 flex-1 leading-snug">
+                      {truncateString(product.name, 60)}
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="font-semibold text-slate-900">
+                        रू {formatPrice(product.price * product.quantity)}
+                      </div>
+                      <div className="text-xs text-slate-400">
+                        {product.quantity} × रू {formatPrice(product.price)}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-3 font-bold">
-                Grand Total ={" "}
-                <span className="text-3xl font-normal">
-                  {" "}
-                  रू
+              <Separator className="mb-6" />
+
+              <div className="flex mb-8 justify-between items-end pt-2">
+                <span className="text-lg font-bold">Grand Total</span>
+                <span className="text-2xl font-extrabold ">
+                  रू{" "}
                   {formatPrice(
-                    cart?.reduce(
-                      (acc, product) => acc + product.price * product.quantity,
-                      0,
-                    ),
+                    cart?.reduce((acc, p) => acc + p.price * p.quantity, 0),
                   )}
                 </span>
               </div>
-              <div>
-                <Button onClick={()=>navigate("/checkout")}>Check out</Button>
-              </div>
+
+              <Button
+                size="lg"
+                className="w-full "
+                onClick={() => navigate("/checkout")}
+              >
+                Proceed to Checkout
+              </Button>
             </div>
           </div>
         ) : (

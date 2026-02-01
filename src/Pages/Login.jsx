@@ -1,77 +1,14 @@
-import { addtoCart } from "@/api/cart";
-import useAuthStore from "@/store/useAuthStore";
-import { getLocalCart } from "@/utils/cart";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { login } from "../api/auth";
+import { NavLink } from "react-router-dom";
+import { useLogin } from "@/hooks/useLogin";
 
 function Login() {
-  const { setUser, user, redirectTo, clearRedirectTo, setIsLoggedIn } = useAuthStore();
-  const queryClient = useQueryClient();
-  const { state } = useLocation();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const navigate = useNavigate();
-
-  const { mutate: cartMutate } = useMutation({
-    mutationFn: addtoCart,
-    onError: (err) => {
-      console.log(err);
-      toast.error("failed to sync cart");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-      toast.success("Cart synced Successfully");
-      localStorage.removeItem("cart");
-    },
-  });
-  const { mutate: loginMutate, isPending } = useMutation({
-    mutationFn: login,
-    onError: (err) => {
-      console.log(err);
-      toast.error("login failed");
-    },
-
-    onSuccess: (data) => {
-      console.log(data);
-      setUser(data.user);
-      console.log(user,"user"); 
-      setIsLoggedIn(true);
-      // Sync localStorage cart to backend
-
-      const localCart = getLocalCart();
-      console.log(localCart);
-      if (localCart.length > 0 && localCart) {
-        const items = localCart.map((item) => ({
-          product: item.productId,
-          quantity: item.quantity,
-        }));
-        cartMutate(items);
-      }
-
-      // Redirect to the page user was trying to access, or default redirect
-      if (state?.redirect && state.redirect !== "/login" && state.redirect !== "/register"  && data.user.role !== "admin") {
-        console.log(state.redirect,"state.redirect");
-        navigate(state.redirect, { replace: true });
-      } else if (redirectTo && redirectTo !== "/login" && redirectTo !== "/register" && data.user.role !== "admin") {
-        console.log(redirectTo,"redirectTo");
-        navigate(redirectTo, { replace: true });
-        clearRedirectTo();
-      } else if ( data.user.role === "user" && data.user.role !== "admin") {
-        console.log("user");
-        navigate("/", { replace: true });
-      } else if (data.user.role === "admin" && data.user.role !== "user") {
-        console.log("admin");
-        navigate("/AdminDashboard", { replace: true });
-      }
-      toast.success("Login successful");
-    },
-  });
+  const { loginMutate, isPending } = useLogin();
   const onSubmit = (data) => {
     const cusData = {
       email: data.email,
