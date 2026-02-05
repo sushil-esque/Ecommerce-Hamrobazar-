@@ -1,18 +1,35 @@
 import { registerUser } from "@/api/auth";
+import { addtoCart } from "@/api/cart";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "@tanstack/react-query";
+import useAuthStore from "@/store/useAuthStore";
+import { getLocalCart } from "@/utils/cart";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function SignUp() {
   const navigate = useNavigate();
+  const { setUser, setIsLoggedIn, redirectTo, clearRedirectTo } =
+    useAuthStore();
+  const { state } = useLocation();
 
-  const { toast } = useToast();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const { mutate: cartMutate } = useMutation({
+    mutationFn: addtoCart,
+    onError: (err) => {
+      console.error(err);
+      toast.error("Failed to sync cart");
+    },
+    onSuccess: () => {
+      toast.success("Cart synced successfully");
+      localStorage.removeItem("cart");
+    },
+  });
 
   const { mutate: registerMutate, isPending } = useMutation({
     mutationFn: registerUser,
@@ -24,13 +41,41 @@ function SignUp() {
       });
     },
     onSuccess: (data) => {
-      console.log(data);
-      // setToken(data.token);
-      navigate("/login");
-      toast({
-        title: "Registration Successfull",
-        description: "You can now login to your account",
-      });
+      setUser(data.user);
+      setIsLoggedIn(true);
+
+      // Sync local cart
+      const localCart = getLocalCart();
+      if (localCart && localCart.length > 0) {
+        const items = localCart.map((item) => ({
+          product: item.productId,
+          quantity: item.quantity,
+        }));
+        cartMutate(items);
+      }
+
+      if (
+        state?.redirect &&
+        state.redirect !== "/login" &&
+        state.redirect !== "/register" &&
+        data.user.role !== "admin"
+      ) {
+        navigate(state.redirect, { replace: true });
+      } else if (
+        redirectTo &&
+        redirectTo !== "/login" &&
+        redirectTo !== "/register" &&
+        data.user.role !== "admin"
+      ) {
+        navigate(redirectTo, { replace: true });
+        clearRedirectTo();
+      } else if (data.user.role === "user" && data.user.role !== "admin") {
+        navigate("/", { replace: true });
+      } else if (data.user.role === "admin" && data.user.role !== "user") {
+        navigate("/AdminDashboard", { replace: true });
+      }
+
+      toast.success("Signup successful");
     },
   });
   const onSubmit = (data) => {
@@ -39,7 +84,6 @@ function SignUp() {
       email: data.email,
       password: data.password,
     };
-    console.log(cusData);
     registerMutate(cusData);
   };
   return (
@@ -165,7 +209,7 @@ function SignUp() {
                 type="submit"
                 className="w-full text-white bg-blue-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                Create an account
+                {isPending ? "Signing up..." : "Sign up"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?{" "}

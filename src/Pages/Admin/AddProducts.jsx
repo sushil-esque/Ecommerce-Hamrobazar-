@@ -220,11 +220,13 @@ function AddProduct() {
     <>
       {console.log(images)}
       {console.log(mainPreview)}
+     
 
       <form
-        className=" w-full p-6 mt-[72px] relative"
+        className=" w-full p-6  relative"
         onSubmit={form.handleSubmit(onSubmit)}
       >
+        
         <FieldGroup className="w-full ">
           <div className="lg:flex flex-row gap-4 ">
             <div className="w-full h-fit  lg:w-[55%] ">

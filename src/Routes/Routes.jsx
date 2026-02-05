@@ -21,6 +21,7 @@ import AdminLayout from "@/Layouts/AdminLayout";
 import CheckOut from "@/Pages/CheckOut";
 import ProtectedRoute from "@/Components/ProtectedRoute";
 import Layout from "@/Layouts/Layout";
+import PaymentSucess from "@/Pages/PaymentSucess";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -44,7 +45,16 @@ const routes = createBrowserRouter(
             </ProtectedRoute>
           }
         />
+        <Route
+          path="paymentsuccess"
+          element={
+            <ProtectedRoute>
+              <PaymentSucess />
+            </ProtectedRoute>
+          }
+        />
       </Route>
+
       <Route
         path="/AdminDashboard"
         element={

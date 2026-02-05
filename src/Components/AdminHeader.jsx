@@ -8,6 +8,9 @@ import { CiShoppingCart } from "react-icons/ci";
 import { FaMagnifyingGlass, FaSquarePlus } from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
 import { SidebarTrigger } from "./ui/sidebar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
+import { UserRound } from "lucide-react";
 
 // Example: Solid Icon
 function AdminHeader() {
@@ -28,7 +31,7 @@ function AdminHeader() {
     },
   });
   return (
-    <div className="flex z-10 items-center py-3 px-2 box-border border-solid border-b-[1px] bg-white">
+    <div className="flex z-10 items-center py-3 lg:px-7 px-2 box-border border-solid border-b-[1px] bg-white">
       <div className="text-black  text-lg w-full   bg-white  flex justify-between  items-center gap-1 sm:gap-2">
         <div className="flex gap-4">
           <SidebarTrigger />
@@ -51,27 +54,53 @@ function AdminHeader() {
           </div>
         </div>
 
-        <div className="border border-black rounded-md flex items-center px-6 max-w-[37rem]   ">
+        {/* <div className="border border-black rounded-md flex items-center px-6 max-w-[37rem]   ">
           <input
             type="search"
             className=" px-2 py-1 w-full outline-none"
             placeholder="Search for accesories"
           />
           <FaMagnifyingGlass />
-        </div>
+        </div> */}
 
         {user ? (
-          <button
-            className="border border-black px-2 py-1 text-black rounded-md  shrink-0 w-max hover:text-white hover:bg-black transition-colors duration-300 ease-in-out"
-            // onClick={() => {
-            //   clearToken();
-            //   toast({ title: "Logout Successfull" });
-            // }}
-            onClick={() => logoutMutate()}
-          >
-            Logout
-          </button>
-        ) : (
+           
+            <DropdownMenu className="">
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  className="rounded-full sm:flex items-center justify-center hidden focus-visible:ring-0 focus-visible:ring-offset-0"
+                >
+                  <UserRound className="h-full w-full text-gray-600" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-fit">
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <div className="flex items-center gap-2 cursor-pointer">
+                      <UserRound className="h-full w-full text-gray-600 " />
+                      <div>
+                        <p className="text-xs ">{user.email}</p>
+                        <p className="text-xs text-gray-500">visit profile</p>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>Billing</DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => logoutMutate()}
+                  >
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) :(
           <ul className="flex gap-6 items-center text-md ">
             <NavLink to="/login">
               <li className="sm:block hidden hover:text-blue-500 transition-colors duration-300 ease-in-out">

@@ -228,7 +228,7 @@ function Categories() {
     return <Loader />;
   }
   return (
-    <div className="w-full p-6 mt-[72px]">
+    <div className="w-full p-6 ">
       {console.log(loadingId)}
       <div className="flex flex-wrap gap-6 ">
         <div className="lg:w-1/2 w-full">

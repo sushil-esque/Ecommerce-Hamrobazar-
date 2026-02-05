@@ -4,6 +4,7 @@ import { Separator } from "@radix-ui/react-select";
 import { CiBookmarkPlus } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
+import ShareDialog from "./ShareDialog";
 import { Spinner } from "./ui/spinner";
 
 function GridCard({ product }) {
@@ -33,7 +34,9 @@ function GridCard({ product }) {
                 >
                   {product.name}
                 </h3>
-                <GoShareAndroid className="shrink-0" />
+                <ShareDialog product={product}>
+                  <GoShareAndroid className="shrink-0" />
+                </ShareDialog>
               </div>
 
               <p className="text-gray-600 text-xs font-medium mb-4">
@@ -53,7 +56,11 @@ function GridCard({ product }) {
                 onClick={() => handleAddToCart(product)}
                 disabled={addingtoCart}
               >
-                {addingtoCart ? <Spinner /> : <CiBookmarkPlus className="text-xl font-bold" />}
+                {addingtoCart ? (
+                  <Spinner />
+                ) : (
+                  <CiBookmarkPlus className="text-xl font-bold" />
+                )}
               </button>
             </div>
           </div>

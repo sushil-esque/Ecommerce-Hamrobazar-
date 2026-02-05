@@ -22,6 +22,7 @@ async function registerUser(data) {
     url: BASE_URL + "signup",
     method: "POST",
     data: data,
+    withCredentials: true,
   });
 }
 

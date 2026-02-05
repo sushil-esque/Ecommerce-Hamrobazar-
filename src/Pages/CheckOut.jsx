@@ -1,4 +1,4 @@
-import { checkout } from "@/api/order";
+import { checkout, esewaInitiate } from "@/api/order";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -28,16 +28,15 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/Components/ui/radio-group";
+import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/Components/ui/spinner";
 import { useCartStore } from "@/store/useCartStore";
 import { formatPrice } from "@/utils/formatPrice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
-import { RiInformationFill } from "react-icons/ri";
 import { NavLink } from "react-router-dom";
 import { toast } from "sonner";
-import { Separator } from "@/components/ui/separator";
 import z from "zod";
 
 function CheckOut() {
@@ -51,16 +50,15 @@ function CheckOut() {
     }
     return str.slice(0, num) + "...";
   }
-  const { mutate: checkoutMutate, isPending } = useMutation({
+  const { mutateAsync: checkoutMutate, isPending } = useMutation({
     mutationFn: checkout,
     onSuccess: () => {
-      toast.success("Order placed successfully");
       form.reset();
       queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
-    onError: (err) => {
-      toast.error(err.error);
-    },
+  });
+  const esewaInitiateMutation = useMutation({
+    mutationFn: esewaInitiate,
   });
   const paymentMethod = [
     {
@@ -73,6 +71,10 @@ function CheckOut() {
     //   title: "Khalti",
     //   description: "For everyday use with basic features.",
     // },
+    {
+      id: "Esewa",
+      title: "Esewa",
+    },
   ];
 
   const checkoutSchema = z.object({
@@ -100,10 +102,45 @@ function CheckOut() {
       paymentMethod: "",
     },
   });
-  const onSubmit = (data) => {
-    console.log(data);
-    checkoutMutate(data);
+
+  const onSubmit = async (data) => {
+    try {
+      //  Create order
+      const orderResponse = await checkoutMutate(data);
+
+      //  If COD
+      if (data.paymentMethod === "COD") {
+        toast.success("Order placed successfully");
+        return;
+      }
+
+      //  If Esewa : initiate payment
+      const esewaResponse = await esewaInitiateMutation.mutateAsync({
+        orderId: orderResponse._id,
+      });
+      console.log(esewaResponse);
+
+      //  Redirect to Esewa
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
+
+      Object.entries(esewaResponse).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value.toString();
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+    } catch (error) {
+      toast.error("Something went wrong while processing payment");
+      console.error(error);
+    }
   };
+
   return (
     <div className="max-w-[1320px] mx-auto lg:mx-24 md:mx-4 sm:mx-4  ">
       <Breadcrumb className="mb-5">
@@ -298,10 +335,10 @@ function CheckOut() {
                 render={({ field, fieldState }) => (
                   <FieldSet data-invalid={fieldState.invalid}>
                     <FieldLegend variant="label">Payment Options</FieldLegend>
-                    <FieldDescription className={"flex items-center  gap-2"}>
+                    {/* <FieldDescription className={"flex items-center  gap-2"}>
                       <RiInformationFill className="text-xl" /> Currently we
                       accept Cash on Delivery only
-                    </FieldDescription>
+                    </FieldDescription> */}
                     <RadioGroup
                       name={field.name}
                       value={field.value}

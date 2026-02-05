@@ -111,16 +111,7 @@ function Header() {
         )} */}
 
           {user ? (
-            // <button
-            //   className="border border-black px-2 py-1 text-black rounded-md  shrink-0 w-max hover:text-white hover:bg-black transition-colors duration-300 ease-in-out"
-            //   // onClick={() => {
-            //   //   clearToken();
-            //   //   toast({ title: "Logout Successfull" });
-            //   // }}
-            //   onClick={() => logoutMutate()}
-            // >
-            //   Logout
-            // </button>
+           
             <DropdownMenu className="">
               <DropdownMenuTrigger asChild>
                 <Button

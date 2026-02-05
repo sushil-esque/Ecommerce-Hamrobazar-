@@ -200,7 +200,7 @@ export default function ViewProducts() {
   }
 
   return (
-    <div className=" mt-20 mx-10 py-10">
+    <div className=" mx-10 py-10">
       <DataTable columns={columns} data={data?.data ?? []} />
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button

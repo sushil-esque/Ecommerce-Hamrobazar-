@@ -4,6 +4,7 @@ import { Separator } from "@radix-ui/react-select";
 import { CiBookmarkPlus } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
+import ShareDialog from "./ShareDialog";
 import { Spinner } from "./ui/spinner";
 
 function LinearCard({ product }) {
@@ -43,12 +44,13 @@ function LinearCard({ product }) {
               >
                 {product.name}
               </h3>
-              <GoShareAndroid  className="cursor-pointer shrink-0"/>
+              <ShareDialog product={product}>
+                <GoShareAndroid className="cursor-pointer shrink-0" />
+              </ShareDialog>
             </div>
 
-          
             <p className="text-gray-600 line-clamp-4 sm:line-clamp-5 md:line-clamp-5 lg:line-clamp-5 text-xs font-medium mb-4">
-             {product.description}
+              {product.description}
             </p>
             <div className="sm:flex items-center   justify-between w-full">
               <div className="flex h-4 items-center gap-2">
