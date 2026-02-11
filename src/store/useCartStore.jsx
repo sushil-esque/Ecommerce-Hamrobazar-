@@ -7,14 +7,14 @@ export const useCartStore = create((set) => ({
   addToLocalCart: (product) =>
     set((state) => {
       const existing = state.cart.find(
-        (item) => item.productId === product._id
+        (item) => item.productId === product._id,
       );
       let updatedCart;
       if (existing) {
         updatedCart = state.cart.map((item) =>
           item.productId === product._id
             ? { ...item, quantity: item.quantity + 1 }
-            : item
+            : item,
         );
       } else {
         updatedCart = [
@@ -29,8 +29,11 @@ export const useCartStore = create((set) => ({
         ];
       }
       saveLocalCart(updatedCart);
-     
+
       return { cart: updatedCart };
     }),
-    
+  clearCart: () => {
+    saveLocalCart([]);
+    return set({ cart: [] });
+  },
 }));

@@ -49,7 +49,7 @@ export const useLogin = () => {
       if (
         state?.redirect &&
         state.redirect !== "/login" &&
-        state.redirect !== "/register" &&
+        state.redirect !== "/signup" &&
         data.user.role !== "admin"
       ) {
         console.log(state.redirect, "state.redirect");
@@ -57,7 +57,7 @@ export const useLogin = () => {
       } else if (
         redirectTo &&
         redirectTo !== "/login" &&
-        redirectTo !== "/register" &&
+        redirectTo !== "/signup" &&
         data.user.role !== "admin"
       ) {
         console.log(redirectTo, "redirectTo");

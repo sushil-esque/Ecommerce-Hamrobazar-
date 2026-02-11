@@ -1,11 +1,12 @@
 import useAddToCart from "@/hooks/useAddToCart";
 import { formatPrice } from "@/utils/formatPrice";
-import { Separator } from "@radix-ui/react-select";
 import { CiBookmarkPlus } from "react-icons/ci";
 import { GoShareAndroid } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import ShareDialog from "./ShareDialog";
 import { Spinner } from "./ui/spinner";
+import { Separator } from "./ui/separator";
+import { LucideStar } from "lucide-react";
 
 function LinearCard({ product }) {
   const navigate = useNavigate();
@@ -39,19 +40,29 @@ function LinearCard({ product }) {
           <div className="w-full flex flex-col">
             <div className="flex  justify-between">
               <h3
-                className=" text-[0.813rem] line-clamp-2 font-[600] cursor-pointer mb-2 underline decoration-gray-400 underline-offset-4"
+                className=" text-[0.813rem] line-clamp-2 font-[600] cursor-pointer  underline decoration-gray-400 underline-offset-4"
                 onClick={() => navigate(`/product/${product?._id}`)}
               >
                 {product.name}
               </h3>
+
               <ShareDialog product={product}>
                 <GoShareAndroid className="cursor-pointer shrink-0" />
               </ShareDialog>
             </div>
+            <div className="flex gap-1 items-center my-1 ">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <LucideStar
+                  key={i}
+                  className={`w-3.5 h-3.5 ${i < product.avgRating ? "fill-black " : "text-gray-300"}`}
+                />
+              ))}
+            </div>
 
-            <p className="text-gray-600 line-clamp-4 sm:line-clamp-5 md:line-clamp-5 lg:line-clamp-5 text-xs font-medium mb-4">
+            <p className="text-gray-600 line-clamp-4 sm:line-clamp-5 md:line-clamp-5 lg:line-clamp-5 text-xs font-medium mb-2">
               {product.description}
             </p>
+
             <div className="sm:flex items-center   justify-between w-full">
               <div className="flex h-4 items-center gap-2">
                 <span className="text-[0.813rem] font-[600]  whitespace-nowrap ">

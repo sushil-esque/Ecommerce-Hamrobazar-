@@ -6,6 +6,7 @@ import { GoShareAndroid } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import ShareDialog from "./ShareDialog";
 import { Spinner } from "./ui/spinner";
+import { LucideStar } from "lucide-react";
 
 function GridCard({ product }) {
   const navigate = useNavigate();
@@ -37,6 +38,15 @@ function GridCard({ product }) {
                 <ShareDialog product={product}>
                   <GoShareAndroid className="shrink-0" />
                 </ShareDialog>
+              </div>
+
+              <div className="flex gap-1 mb-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <LucideStar
+                    key={i}
+                    className={`w-3 h-3 ${i < (product?.avgRating || 0) ? "fill-black" : "text-gray-300"}`}
+                  />
+                ))}
               </div>
 
               <p className="text-gray-600 text-xs font-medium mb-4">

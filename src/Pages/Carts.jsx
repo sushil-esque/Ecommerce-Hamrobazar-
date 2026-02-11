@@ -20,6 +20,46 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 
+const EmptyCart = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="flex flex-col items-center justify-center py-20 px-4 text-center   my-4">
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="relative bg-white p-8 rounded-full shadow-lg border border-slate-50">
+          <svg
+            className="w-24 h-24 text-primary opacity-80"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+            />
+          </svg>
+        </div>
+      </div>
+      <h3 className="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">
+        Your cart is feeling lonely
+      </h3>
+      <p className="text-slate-500 max-w-md mx-auto mb-10 text-lg leading-relaxed">
+        It looks like you haven&apos;t added anything to your cart yet. Explore
+        our latest collection and find something you love!
+      </p>
+      <Button
+        size="lg"
+        className="px-10 py-6 text-lg font-semibold rounded-2xl "
+        onClick={() => navigate("/")}
+      >
+        Start Shopping
+      </Button>
+    </div>
+  );
+};
+
 function Carts() {
   const navigate = useNavigate();
   const { cart } = useCartStore();
@@ -290,9 +330,7 @@ function Carts() {
             </div>
           </div>
         ) : (
-          <div className="flex justify-center h-80 items-center">
-            Cart is empty
-          </div>
+          <EmptyCart />
         )}
       </div>
     </>

@@ -3,16 +3,6 @@
 import { deleteProduct, getAllProducts } from "@/api/products";
 import { DataTable } from "@/Components/data-table";
 import Loader from "@/Components/Loader";
-import { toast } from "@/hooks/use-toast";
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Spinner } from "@/components/ui/spinner";
-import { Button } from "@/Components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,11 +14,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/Components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/hooks/use-toast";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useState } from "react";
 import { CiEdit } from "react-icons/ci";
-import { MdDelete } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
-import { set } from "zod";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function ViewProducts() {
   const [searchParams, setSearchParams] = useSearchParams();

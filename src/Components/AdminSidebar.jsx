@@ -34,8 +34,8 @@ function AdminSidebar() {
       icon: Search,
     },
     {
-      title: "Settings",
-      url: "#",
+      title: "Orders",
+      url: "/AdminDashboard/Orders",
       icon: Settings,
     },
   ];

@@ -22,6 +22,9 @@ import CheckOut from "@/Pages/CheckOut";
 import ProtectedRoute from "@/Components/ProtectedRoute";
 import Layout from "@/Layouts/Layout";
 import PaymentSucess from "@/Pages/PaymentSucess";
+import Orders from "@/Pages/Admin/Orders";
+import UserOrders from "@/Pages/UserOrders";
+import Paymentfailure from "@/Pages/Paymentfailure";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -53,6 +56,20 @@ const routes = createBrowserRouter(
             </ProtectedRoute>
           }
         />
+        <Route
+          path="Paymentfailure"
+          element={
+            <ProtectedRoute>
+              <Paymentfailure />
+            </ProtectedRoute>
+          }
+        />
+              <Route path="orders" element={
+                <ProtectedRoute>
+                  <UserOrders/>
+                </ProtectedRoute>
+              }/>
+
       </Route>
 
       <Route
@@ -69,6 +86,7 @@ const routes = createBrowserRouter(
         <Route path="EditProduct/:id" element={<EditProduct />} />
         <Route path="FileUpload" element={<FileUpload />} />
         <Route path="Categories" element={<Categories />} />
+        <Route path="Orders" element={<Orders/>}/>
       </Route>
     </>,
   ),
