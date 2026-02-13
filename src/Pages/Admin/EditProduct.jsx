@@ -54,7 +54,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/Components/ui/input-group";
-import { XIcon } from "lucide-react";
+import { Package, XIcon } from "lucide-react";
 
 function EditProduct() {
   const { id } = useParams();
@@ -74,11 +74,7 @@ function EditProduct() {
   const fileInputRef = useRef(null);
   const imagesChangeRef = useRef([]);
 
-  const {
-    data: categories,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
     retry: 2,
@@ -293,9 +289,18 @@ function EditProduct() {
       {console.log(images)}
       {console.log(mainPreview)}
       <form
-        className="w-full p-6 mt-[72px]"
+        className="p-6 space-y-8 max-w-[1400px] mx-auto"
         onSubmit={form.handleSubmit(onSubmit)}
       >
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+            <Package className="text-primary h-8 w-8" />
+            Edit Product
+          </h1>
+          <p className="text-slate-500 font-medium">
+            Update product information and manage media assets.
+          </p>
+        </div>
         <FieldGroup className="w-full ">
           <div className="lg:flex flex-row gap-4 ">
             <div className="w-full h-fit  lg:w-[55%] ">
@@ -602,7 +607,7 @@ function EditProduct() {
               </Card>
             </div>
 
-            <Card className=" mx-auto w-full lg:w-[45%]  mb-10">
+            <Card className=" mx-auto w-full lg:w-[45%] h-fit  mb-10">
               <CardHeader>
                 <CardTitle>Media</CardTitle>
 

@@ -19,9 +19,9 @@ export const useLogout = () => {
       localStorage.removeItem("user");
 
       toast.success("Logout Successful");
-    //   navigate("/");
+      //   navigate("/");
     },
   });
 
-  return {  logoutMutate, isPending };
+  return { logoutMutate, isPending };
 };

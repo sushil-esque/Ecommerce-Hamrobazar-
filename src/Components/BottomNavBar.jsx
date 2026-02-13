@@ -113,13 +113,13 @@ function BottomNavBar() {
                 {categories}
               </ul>
             </div>
-            <DrawerFooter>
+            {/* <DrawerFooter>
               <DrawerClose asChild>
                 <Button variant="outline" className="w-full">
                   Close
                 </Button>
               </DrawerClose>
-            </DrawerFooter>
+            </DrawerFooter> */}
           </DrawerContent>
         </Drawer>
       </div>

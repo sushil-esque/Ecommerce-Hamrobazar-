@@ -8,35 +8,41 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "./ui/sidebar";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+} from "../ui/sidebar";
+import {
+  LayoutDashboard,
+  PlusCircle,
+  Package,
+  Layers,
+  ShoppingBag,
+} from "lucide-react";
 
 function AdminSidebar() {
   const items = [
     {
-      title: "Home",
-      url: "#",
-      icon: Home,
+      title: "Dashboard",
+      url: "/AdminDashboard",
+      icon: LayoutDashboard,
     },
     {
       title: "Add Products",
       url: "/AdminDashboard/addProducts",
-      icon: Inbox,
+      icon: PlusCircle,
     },
     {
       title: "View Products",
       url: "/AdminDashboard/viewProducts",
-      icon: Calendar,
+      icon: Package,
     },
     {
       title: "Categories",
       url: "/AdminDashboard/Categories",
-      icon: Search,
+      icon: Layers,
     },
     {
       title: "Orders",
       url: "/AdminDashboard/Orders",
-      icon: Settings,
+      icon: ShoppingBag,
     },
   ];
 

@@ -41,7 +41,7 @@ import { Spinner } from "@/Components/ui/spinner";
 import { categorySchema } from "@/schemas/category.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader } from "lucide-react";
+import { Layers, Loader } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { CiEdit } from "react-icons/ci";
@@ -228,11 +228,20 @@ function Categories() {
     return <Loader />;
   }
   return (
-    <div className="w-full p-6 ">
+    <div className="p-6 space-y-8 max-w-[1400px] mx-auto">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+          <Layers className="text-primary h-8 w-8" />
+          Manage Categories
+        </h1>
+        <p className="text-slate-500 font-medium">
+          Organize your products into logical categories.
+        </p>
+      </div>
       {console.log(loadingId)}
       <div className="flex flex-wrap gap-6 ">
         <div className="lg:w-1/2 w-full">
-          <DataTable columns={columns} data={data?.data?? []}  />
+          <DataTable columns={columns} data={data?.data ?? []} />
         </div>
         <Card className="min-w-[300px] h-fit">
           <form onSubmit={addForm.handleSubmit(submitCategory)}>

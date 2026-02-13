@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { ShoppingBag } from "lucide-react";
+import { OrderDetailsDialog } from "@/Components/Admin/OrderDetailsDialog";
 
 function Orders() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,7 +31,7 @@ function Orders() {
   const queryClient = useQueryClient();
   const [processingId, setProcessingId] = useState(null);
 
-  const { data, isLoading, isPlaceholderData } = useQuery({
+  const { data, isLoading } = useQuery({
     queryFn: () => getAllOrders({ page, limit: 10 }),
     queryKey: ["Orders", page],
     placeholderData: keepPreviousData,
@@ -41,8 +43,8 @@ function Orders() {
       toast.success("Successfully updated order status");
       queryClient.invalidateQueries({ queryKey: ["Orders"] });
     },
-    onError: () => {
-      toast.error("Error updating order status");
+    onError: (err) => {
+      toast.error(err || "Error updating order status");
     },
     onSettled: () => {
       setProcessingId(null);
@@ -63,18 +65,7 @@ function Orders() {
       "bg-sky-50 text-sky-700 border border-sky-200 shadow-sm hover:bg-sky-50 hover:text-sky-700",
   };
 
-  const orderStatusStyles = {
-    placed:
-      "bg-slate-50 text-slate-700 border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-slate-700",
-    confirmed:
-      "bg-blue-50 text-blue-700 border border-blue-200 shadow-sm hover:bg-blue-50 hover:text-blue-700",
-    shipped:
-      "bg-violet-50 text-violet-700 border border-violet-200 shadow-sm hover:bg-violet-50 hover:text-violet-700",
-    delivered:
-      "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm hover:bg-emerald-50 hover:text-emerald-700",
-    cancelled:
-      "bg-rose-50 text-rose-700 border border-rose-200 shadow-sm hover:bg-rose-50 hover:text-rose-700",
-  };
+ 
   const ORDER_STATUSES = [
     "placed",
     "confirmed",
@@ -155,6 +146,11 @@ function Orders() {
       header: "Ordered At",
       cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
     },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => <OrderDetailsDialog order={row.original} />,
+    },
   ];
 
   const handlePageChange = (page) => {
@@ -166,8 +162,17 @@ function Orders() {
   }
 
   return (
-    <div className=" mx-10 py-10">
-      Orders
+    <div className="p-6 space-y-8 max-w-[1400px] mx-auto">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+          <ShoppingBag className="text-primary h-8 w-8" />
+          Order Management
+        </h1>
+        <p className="text-slate-500 font-medium">
+          Monitor and manage customer orders and fulfillment.
+        </p>
+      </div>
+
       <DataTable columns={columns} data={data?.data ?? []} />
       {/* <div className="flex items-center justify-end space-x-2 py-4">
         <Button
@@ -187,43 +192,38 @@ function Orders() {
           Next
         </Button>
       </div> */}
-      
-            <div className="flex mt-4 justify-end items-center gap-1.5">
-              {[...Array(data.pages)].map((_, i) => {
-                const pageNum = i + 1;
-                // Show current page, first, last, and one around current
-                if (
-                  pageNum === 1 ||
-                  pageNum === data.pages ||
-                  (pageNum >= page - 1 && pageNum <= page + 1)
-                ) {
-                  return (
-                    <Button
-                      key={pageNum}
-                      variant={page === pageNum ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handlePageChange(pageNum)}
-                      className={`h-11 w-11 rounded-2xl font-bold shadow-sm ${page !== pageNum ? "border-slate-200 hover:bg-white" : ""}`}
-                    >
-                      {pageNum}
-                    </Button>
-                  );
-                }
-                // Show ellipsis for gaps
-                if (pageNum === page - 2 || pageNum === page + 2) {
-                  return (
-                    <span
-                      key={pageNum}
-                      className="px-1 text-slate-400 font-bold"
-                    >
-                      ...
-                    </span>
-                  );
-                }
-                return null;
-              })}
-            </div>
-
+      <div className="flex mt-4 justify-end items-center gap-1.5">
+        {[...Array(data.pages)].map((_, i) => {
+          const pageNum = i + 1;
+          // Show current page, first, last, and one around current
+          if (
+            pageNum === 1 ||
+            pageNum === data.pages ||
+            (pageNum >= page - 1 && pageNum <= page + 1)
+          ) {
+            return (
+              <Button
+                key={pageNum}
+                variant={page === pageNum ? "default" : "outline"}
+                size="sm"
+                onClick={() => handlePageChange(pageNum)}
+                className={`h-11 w-11 rounded-2xl font-bold shadow-sm ${page !== pageNum ? "border-slate-200 hover:bg-white" : ""}`}
+              >
+                {pageNum}
+              </Button>
+            );
+          }
+          // Show ellipsis for gaps
+          if (pageNum === page - 2 || pageNum === page + 2) {
+            return (
+              <span key={pageNum} className="px-1 text-slate-400 font-bold">
+                ...
+              </span>
+            );
+          }
+          return null;
+        })}
+      </div>
     </div>
   );
 }

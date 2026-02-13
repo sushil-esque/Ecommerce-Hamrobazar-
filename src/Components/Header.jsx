@@ -25,7 +25,6 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 function Header() {
-  const location = useLocation();
   const { user } = useAuthStore();
   const { cart } = useCartStore();
   const navigate = useNavigate();
@@ -48,12 +47,12 @@ function Header() {
           <NavLink to="/">
             <picture>
               {/* Small screen logo */}
-              <source srcSet="hbsmall.png" media="(max-width: 640px)" />
+              <source srcSet="/public/sBsmall.png" media="(max-width: 640px)" />
               {/* Default logo */}
               <img
-                src="hamrobazarr.png"
+                src="/public/shopBytelogo.png"
                 alt="logo"
-                className="w-20 h-10 object-contain sm:w-48 sm:h-12"
+                className="w-10 h-10 object-contain sm:w-48 sm:h-12"
               />
             </picture>
           </NavLink>
@@ -111,7 +110,6 @@ function Header() {
         )} */}
 
           {user ? (
-           
             <DropdownMenu className="">
               <DropdownMenuTrigger asChild>
                 <Button
@@ -133,7 +131,9 @@ function Header() {
                       </div>
                     </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={()=>navigate("orders")}>Orders</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate("orders")}>
+                    Orders
+                  </DropdownMenuItem>
                   <DropdownMenuItem>Settings</DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

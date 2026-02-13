@@ -1,8 +1,6 @@
 import { basicAxios } from "./interceptor";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-async function getAllCategory() {
-  return await basicAxios.get(BASE_URL + "products/categories");
-}
+
 export async function getCategories() {
   return await basicAxios.get(BASE_URL + "categories");
 }
@@ -25,5 +23,4 @@ export const deleteCategory = async (id) => {
 };
 
 
-export { getAllCategory };
 

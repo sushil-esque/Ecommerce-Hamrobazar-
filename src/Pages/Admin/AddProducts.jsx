@@ -37,25 +37,18 @@ import { Spinner } from "@/Components/ui/spinner";
 import { Textarea } from "@/Components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { XIcon } from "lucide-react";
+import { PlusCircle, XIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { BiUndo } from "react-icons/bi";
-import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 function AddProduct() {
-  const { id } = useParams();
-
   const [mainPreview, setMainPreview] = useState();
   const fileInputRef = useRef(null);
   const imagesChangeRef = useRef([]);
 
-  const {
-    data: categories,
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: categories, isLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: getCategories,
     retry: 2,
@@ -155,7 +148,6 @@ function AddProduct() {
   };
 
   const onSubmit = (data) => {
-    const values = form.getValues();
     console.log(data.specifications);
     const formData = new FormData();
 
@@ -220,13 +212,21 @@ function AddProduct() {
     <>
       {console.log(images)}
       {console.log(mainPreview)}
-     
 
       <form
-        className=" w-full p-6  relative"
+        className="p-6 space-y-8 max-w-[1400px] mx-auto"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+            <PlusCircle className="text-primary h-8 w-8" />
+            Add New Product
+          </h1>
+          <p className="text-slate-500 font-medium">
+            Fill in the details to add a new product to your catalog.
+          </p>
+        </div>
+
         <FieldGroup className="w-full ">
           <div className="lg:flex flex-row gap-4 ">
             <div className="w-full h-fit  lg:w-[55%] ">

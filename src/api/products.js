@@ -1,7 +1,7 @@
 import { basicAxios } from "./interceptor";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export async function getAllProducts({ pageParam = 1, limit = 20 }) {
+export async function getAllProducts({ pageParam = 1, limit = 10 }) {
   return await basicAxios.get(
     BASE_URL + `products?page=${pageParam}&limit=${limit}`,
   );
@@ -47,7 +47,7 @@ export const deleteProduct = async (productId) => {
 
 export const getCategoryWiseProducts = async ({
   pageParam = 1,
-  limit = 5,
+  limit = 10,
   categorySlug,
   searchQuery,
   minPrice,
@@ -62,7 +62,7 @@ export const getCategoryWiseProducts = async ({
 
 export const getSearchResults = async ({
   pageParam = 1,
-  limit = 2,
+  limit = 10,
   searchQuery,
 }) => {
   return await basicAxios.get(

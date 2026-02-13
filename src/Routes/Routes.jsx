@@ -3,7 +3,6 @@ import Categories from "@/Pages/Admin/Categories";
 import EditProduct from "@/Pages/Admin/EditProduct";
 import FileUpload from "@/Pages/Admin/FileUpload";
 import ViewProducts from "@/Pages/Admin/ViewProducts";
-import AdminPannel from "@/Pages/AdminPannel";
 import Carts from "@/Pages/Carts";
 import CategoryWiseProducts from "@/Pages/CategoryWiseProducts";
 import SingleProduct from "@/Pages/SingleProduct";
@@ -25,6 +24,8 @@ import PaymentSucess from "@/Pages/PaymentSucess";
 import Orders from "@/Pages/Admin/Orders";
 import UserOrders from "@/Pages/UserOrders";
 import Paymentfailure from "@/Pages/Paymentfailure";
+import Dashboard from "@/Pages/Admin/Dashboard";
+import NotFound from "@/Pages/NotFound";
 
 const routes = createBrowserRouter(
   createRoutesFromElements(
@@ -64,12 +65,16 @@ const routes = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-              <Route path="orders" element={
-                <ProtectedRoute>
-                  <UserOrders/>
-                </ProtectedRoute>
-              }/>
+        <Route
+          path="orders"
+          element={
+            <ProtectedRoute>
+              <UserOrders />
+            </ProtectedRoute>
+          }
+        />
 
+        <Route path="*" element={<NotFound />} />
       </Route>
 
       <Route
@@ -80,13 +85,14 @@ const routes = createBrowserRouter(
           </ProtectedRoute>
         }
       >
-        <Route index element={<AdminPannel />} />
+        <Route index element={<Dashboard />} />
+        <Route path="Dashboard" element={<Dashboard />} />
         <Route path="AddProducts" element={<AddProducts />} />
         <Route path="ViewProducts" element={<ViewProducts />} />
         <Route path="EditProduct/:id" element={<EditProduct />} />
         <Route path="FileUpload" element={<FileUpload />} />
         <Route path="Categories" element={<Categories />} />
-        <Route path="Orders" element={<Orders/>}/>
+        <Route path="Orders" element={<Orders />} />
       </Route>
     </>,
   ),

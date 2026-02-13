@@ -26,6 +26,7 @@ import {
 import { useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import { Package } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function ViewProducts() {
@@ -198,7 +199,17 @@ export default function ViewProducts() {
   }
 
   return (
-    <div className=" mx-10 py-10">
+    <div className="p-6 space-y-8 max-w-[1400px] mx-auto">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+          <Package className="text-primary h-8 w-8" />
+          Product Catalog
+        </h1>
+        <p className="text-slate-500 font-medium">
+          Manage and view all your products in one place.
+        </p>
+      </div>
+
       <DataTable columns={columns} data={data?.data ?? []} />
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button

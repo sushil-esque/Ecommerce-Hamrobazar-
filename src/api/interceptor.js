@@ -28,6 +28,7 @@ function axiosRejected(e) {
       return Promise.reject(e.response.data);
     }
     if (e.response.status === 401 || e.response.status === 403) {
+      // toast.error("Session expired. Please login again.");
       useAuthStore.setState({ user: null });
       useAuthStore.setState({ isLoggedIn: false });
       return Promise.reject(e.response.data);

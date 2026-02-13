@@ -1,11 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
-import { Toaster } from "sonner";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
+import { toast, Toaster } from "sonner";
 import { me } from "./api/auth";
 import "./App.css";
 import Routes from "./Routes/Routes";
 import useAuthStore from "./store/useAuthStore";
 import { useEffect } from "react";
 import Loader from "./Components/Loader";
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => {
+      toast.error(error.error || "something went wrong");
+    },
+  }),
+});
+
 function App() {
   const {
     data: user,
@@ -39,8 +52,10 @@ function App() {
   }
   return (
     <>
-      <Toaster position="top-center" />
-      <Routes />
+      <QueryClientProvider client={queryClient}>
+        <Toaster position="top-center" />
+        <Routes />
+      </QueryClientProvider>
     </>
   );
 }
