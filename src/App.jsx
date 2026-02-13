@@ -14,6 +14,7 @@ import Loader from "./Components/Loader";
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error) => {
+      if (error.error === "cart not found") return;
       toast.error(error.error || "something went wrong");
     },
   }),

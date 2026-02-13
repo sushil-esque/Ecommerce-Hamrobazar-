@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 import { useLogin } from "@/hooks/useLogin";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 function Login() {
   const {
@@ -8,6 +10,7 @@ function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  const [showPassword, setShowPassword] = useState(false);
   const { loginMutate, isPending } = useLogin();
   const onSubmit = (data) => {
     const cusData = {
@@ -53,40 +56,38 @@ function Login() {
                 >
                   Password
                 </label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  required=""
-                  {...register("password", {
-                    required: {
-                      message: "Password is required",
-                      value: true,
-                    },
-                  })}
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    required=""
+                    {...register("password", {
+                      required: {
+                        message: "Password is required",
+                        value: true,
+                      },
+                    })}
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
                 {errors.password && (
                   <span className="text-red-600">
                     {errors.password.message}
                   </span>
                 )}
               </div>
-              {/* <div>
-              <label
-                htmlFor="confirm-password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Confirm password
-              </label>
-              <input
-                type="confirm-password"
-                name="confirm-password"
-                id="confirm-password"
-                placeholder="••••••••"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required=""
-              />
-            </div> */}
+             
 
               <button
                 type="submit"
@@ -95,7 +96,7 @@ function Login() {
                 {isPending ? "Logging in..." : "Login"}
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <NavLink
                   to={"/signup"}
                   className="font-medium text-primary-600 hover:underline dark:text-primary-500"

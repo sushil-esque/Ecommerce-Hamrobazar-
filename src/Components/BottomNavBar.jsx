@@ -129,7 +129,10 @@ function BottomNavBar() {
       {/* <div className="cursor-pointer">
         <VscBell />
       </div> */}
-      <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
+      <div
+        className="relative cursor-pointer select-none "
+        onClick={() => navigate("/cart")}
+      >
         <PiShoppingCartSimpleFill className="text-2xl cursor-pointer" />
         <Badge className="absolute hover:bg-white bg-white  text-black -top-1 -right-[6px] h-3  rounded-full px-1 font-mono tabular-nums">
           {cart.length}
@@ -143,7 +146,7 @@ function BottomNavBar() {
           <DrawerContent>
             <DrawerClose asChild>
               {user ? (
-                <div className="flex items-center  gap-2 cursor-pointer">
+                <div className="flex items-center p-2  gap-2 cursor-pointer">
                   <Button
                     variant="secondary"
                     size="icon"
@@ -151,13 +154,13 @@ function BottomNavBar() {
                   >
                     <UserRound className="h-5 w-5 text-gray-600" />
                   </Button>
-                  <div className="flex flex-col items-start">
-                    <p className="text-xs ">{user?.email}</p>
+                  <div className="flex flex-col items-start ">
+                    <p className="text-xs ">{user?.username ?? user?.email}</p>
                     <p className="text-xs text-gray-500">visit profile</p>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 mx-2 mt-5 ">
+                <div className="flex items-center gap-2 mx-2 my-5 ">
                   <Button className="w-full" onClick={() => navigate("/login")}>
                     {" "}
                     Login
@@ -172,8 +175,25 @@ function BottomNavBar() {
                 </div>
               )}
             </DrawerClose>
+            <Separator className="my-1" />
+
             <div className="px-4 py-2 max-h-[60vh] overflow-y-auto">
               <ul className="flex flex-col items-start w-full">
+                {user && (
+                  <li className="w-full">
+                    <DrawerClose asChild>
+                      <NavLink
+                        to="orders"
+                        className="flex items-center justify-between w-full rounded-lg px-4 py-3 text-base font-medium hover:bg-gray-100 cursor-pointer"
+                      >
+                        <span>My orders</span>
+                        <FaChevronRight className="text-gray-400 text-sm" />
+                      </NavLink>
+                    </DrawerClose>
+                    <Separator className="my-1" />
+                  </li>
+                )}
+
                 <li className="w-full">
                   <DrawerClose asChild>
                     <NavLink

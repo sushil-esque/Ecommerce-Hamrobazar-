@@ -1,26 +1,8 @@
-import ProductCardSkeleton from "@/Components/ProductCardSkeleton";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { CiGrid2H } from "react-icons/ci";
-import { TbCategory2 } from "react-icons/tb";
-import {
-  NavLink,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom";
-import { getCategoryWiseProducts } from "../api/products";
-import { BsGrid } from "react-icons/bs";
-import LinearCard from "@/Components/LinearCard";
 import GridCard from "@/Components/GridCard";
-import { useInView } from "react-intersection-observer";
+import LinearCard from "@/Components/LinearCard";
+import ProductCardSkeleton from "@/Components/ProductCardSkeleton";
 import ProductCardSkeletonGrid from "@/Components/ProductCardSkeletonGrid";
-import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
-import { Input } from "@/Components/ui/input";
-import { Slider } from "@/Components/ui/slider";
 import { Button } from "@/Components/ui/button";
-import { ChevronDown } from "lucide-react";
-import { useSidebarStore } from "@/store/useSidebarStore";
 import {
   Drawer,
   DrawerClose,
@@ -30,6 +12,23 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/Components/ui/drawer";
+import { Input } from "@/Components/ui/input";
+import { Slider } from "@/Components/ui/slider";
+import { useSearchPlaceHolder } from "@/store/useSearchPlaceHolder";
+import { useSidebarStore } from "@/store/useSidebarStore";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BsGrid } from "react-icons/bs";
+import { CiGrid2H } from "react-icons/ci";
+import { TbCategory2 } from "react-icons/tb";
+import { useInView } from "react-intersection-observer";
+import {
+  NavLink,
+  useParams,
+  useSearchParams
+} from "react-router-dom";
+import { getCategoryWiseProducts } from "../api/products";
 
 import { Skeleton } from "@/Components/ui/skeleton";
 
@@ -48,12 +47,7 @@ function CategoryWiseProducts() {
   const maxPrice = searchParam.get("maxPrice");
   const [value, setValue] = useState([0, 500000]);
 
-  const [toggle, setToggle] = useState(false);
-  const navigate = useNavigate();
-  const handleToggle = () => {
-    setToggle(!toggle);
-  };
-  console.log(toggle);
+
   const [isGrid, setIsGrid] = useState(false);
   const { setSearchPlaceHolder } = useSearchPlaceHolder();
   const { toggleCategoryDrawer } = useSidebarStore();
@@ -258,7 +252,7 @@ function CategoryWiseProducts() {
             <div className="flex flex-col gap-3">
               {products}
               {isFetchingNextPage &&
-                Array.from({ length: 5 }).map((_, index) => (
+                Array.from({ length: 2 }).map((_, index) => (
                   <ProductCardSkeleton key={index} />
                 ))}
             </div>
@@ -268,7 +262,7 @@ function CategoryWiseProducts() {
             <div className="grid grid-cols-2 sm:grid-cols-3  gap-3">
               {productsGrid}
               {isFetchingNextPage &&
-                Array.from({ length: 5 }).map((_, index) => (
+                Array.from({ length: 2 }).map((_, index) => (
                   <ProductCardSkeletonGrid key={index} />
                 ))}
             </div>

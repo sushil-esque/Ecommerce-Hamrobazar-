@@ -96,7 +96,7 @@ function Categories() {
       toast.success("Category deleted successfully");
     },
     onError: (error) => {
-      toast.error(error.error);
+      toast.error(error.error || "something went wrong");
     },
   });
   const onSubmit = (data, id) => {

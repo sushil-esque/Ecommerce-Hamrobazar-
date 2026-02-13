@@ -129,7 +129,7 @@ function Home() {
               <div className="flex flex-col gap-3">
                 {products}
                 {isFetchingNextPage &&
-                  Array.from({ length: 5 }).map((_, index) => (
+                  Array.from({ length: 2 }).map((_, index) => (
                     <ProductCardSkeleton key={index} />
                   ))}
               </div>
@@ -138,7 +138,7 @@ function Home() {
                 <div className="grid  grid-cols-2 sm:grid-cols-3  gap-3">
                   {productsGrid}
                   {isFetchingNextPage &&
-                    Array.from({ length: 5 }).map((_, index) => (
+                    Array.from({ length: 2 }).map((_, index) => (
                       <ProductCardSkeletonGrid key={index} />
                     ))}
                 </div>

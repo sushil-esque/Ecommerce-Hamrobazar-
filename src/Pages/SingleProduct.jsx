@@ -99,6 +99,7 @@ function SingleProduct() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [tab, setTab] = useState("description");
   const scrollRef = useRef();
+  const isInitialMount = useRef(true);
   const [open, setOpen] = useState(false);
 
   const {
@@ -175,6 +176,11 @@ function SingleProduct() {
 
   // Scroll to ref on mobile when tab changes
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     if (isMobile && scrollRef.current) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     } else {
@@ -187,6 +193,7 @@ function SingleProduct() {
   // Reset tab to description when product changes
   useEffect(() => {
     setTab("description");
+    isInitialMount.current = true;
   }, [id]);
 
   if (isError) {
@@ -257,7 +264,7 @@ function SingleProduct() {
                 <Button
                   disabled={addingtoCart}
                   variant="secondary"
-                  className="flex min-w-[130px] w-full sm:w-1/2  items-center gap-1 justify-center cursor-pointer"
+                  className="flex min-w-[130px] w-full sm:w-1/2 items-center gap-1 justify-center cursor-pointer transition-all duration-200 active:scale-95 hover:bg-gray-200"
                   onClick={() => handleAddToCart(product)}
                 >
                   {addingtoCart ? (
