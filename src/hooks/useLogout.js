@@ -16,7 +16,6 @@ export const useLogout = () => {
       useCartStore.setState(() => ({ cart: [] }));
       setUser(null);
       setIsLoggedIn(false);
-      localStorage.removeItem("user");
 
       toast.success("Logout Successful");
       //   navigate("/");

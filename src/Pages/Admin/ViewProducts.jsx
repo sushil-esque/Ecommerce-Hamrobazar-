@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/Components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { toast } from "@/hooks/use-toast";
 import {
   keepPreviousData,
   useMutation,
@@ -28,6 +27,7 @@ import { CiEdit } from "react-icons/ci";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { Package } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 export default function ViewProducts() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -52,18 +52,11 @@ export default function ViewProducts() {
     mutationFn: deleteProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast({
-        title: "Product deleted Successfully",
-        description: "The product has been updated.",
-      });
+      toast.success("Product deleted Successfully");
     },
     onError: (error) => {
       console.error("Error deleting product:", error);
-      toast({
-        title: "Error",
-        description: "There was an error deleting the product.",
-        variant: "destructive",
-      });
+      toast.error(error.error || "Something went wrong");
     },
     onSettled: () => {
       setDeletingId(null);

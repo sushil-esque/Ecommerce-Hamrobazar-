@@ -31,6 +31,7 @@ import {
 import { getCategoryWiseProducts } from "../api/products";
 
 import { Skeleton } from "@/Components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/Components/ui/tooltip";
 
 function CategoryWiseProducts() {
   // const { data, error, isLoading, isError } = useQuery({
@@ -137,18 +138,33 @@ function CategoryWiseProducts() {
                 </span>
               </div>
             )}
+                  {isGrid ? (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <CiGrid2H
+                        className="text-xl"
+                        onClick={() => setIsGrid((prev) => !prev)}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>switch to list view</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <BsGrid
+                        className="text-xl"
+                        onClick={() => setIsGrid((prev) => !prev)}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>switch to grid view</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
 
-            {isGrid ? (
-              <CiGrid2H
-                className="text-xl"
-                onClick={() => setIsGrid((prev) => !prev)}
-              />
-            ) : (
-              <BsGrid
-                className="text-xl"
-                onClick={() => setIsGrid((prev) => !prev)}
-              />
-            )}
+         
           </div>
           <div className=" block sm:hidden">
             <Drawer>

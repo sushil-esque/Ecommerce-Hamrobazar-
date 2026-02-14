@@ -1,11 +1,12 @@
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { logout } from "@/api/auth";
-import { useToast } from "@/hooks/use-toast";
 import useAuthStore from "@/store/useAuthStore";
 import { useMutation } from "@tanstack/react-query";
 import { UserRound } from "lucide-react";
+import { IoReorderThree } from "react-icons/io5";
 import { NavLink, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -16,25 +17,24 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { useSidebar } from "../ui/sidebar";
-import { IoReorderThree } from "react-icons/io5";
 
-// Example: Solid Icon
 function AdminHeader() {
-  const { clearToken, user, setUser } = useAuthStore();
-  const { toast } = useToast();
+  const { user, setUser, setIsLoggedIn } = useAuthStore();
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
 
   const { mutate: logoutMutate } = useMutation({
     mutationFn: logout,
     onError: (err) => {
+      toast.error(err.error);
       console.log(err);
     },
     onSuccess: (data) => {
       console.log(data);
       setUser(null);
-      clearToken();
-      toast({ title: "Logout Successfull" });
+      setIsLoggedIn(false);
+
+      toast.success("Logout Successfull");
       navigate("/");
     },
   });
@@ -49,18 +49,21 @@ function AdminHeader() {
           <div className="">
             {console.log(user)}
 
-           <NavLink to="/">
-            <picture>
-              {/* Small screen logo */}
-              <source srcSet="/public/sBsmall.png" media="(max-width: 640px)" />
-              {/* Default logo */}
-              <img
-                src="/public/shopBytelogo.png"
-                alt="logo"
-                className="w-10 h-10 object-contain sm:w-48 sm:h-12"
-              />
-            </picture>
-          </NavLink>
+            <NavLink to="/">
+              <picture>
+                {/* Small screen logo */}
+                <source
+                  srcSet="/public/sBsmall.png"
+                  media="(max-width: 640px)"
+                />
+                {/* Default logo */}
+                <img
+                  src="/public/shopBytelogo.png"
+                  alt="logo"
+                  className="w-10 h-10 object-contain sm:w-48 sm:h-12"
+                />
+              </picture>
+            </NavLink>
           </div>
         </div>
 
@@ -95,7 +98,7 @@ function AdminHeader() {
                     </div>
                   </div>
                 </DropdownMenuItem>
-           
+
                 <DropdownMenuItem>Settings</DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />

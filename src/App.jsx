@@ -11,6 +11,7 @@ import Routes from "./Routes/Routes";
 import useAuthStore from "./store/useAuthStore";
 import { useEffect } from "react";
 import Loader from "./Components/Loader";
+import { TooltipProvider } from "./Components/ui/tooltip";
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error) => {
@@ -55,7 +56,9 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <Toaster position="top-center" />
-        <Routes />
+        <TooltipProvider>
+          <Routes />
+        </TooltipProvider>
       </QueryClientProvider>
     </>
   );

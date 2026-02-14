@@ -16,6 +16,11 @@ import { TbCategory2 } from "react-icons/tb";
 import { useInView } from "react-intersection-observer";
 import { NavLink, useSearchParams } from "react-router-dom";
 import { getAllProducts, getSearchResults } from "../api/products";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/Components/ui/tooltip";
 
 function Home() {
   const [searchParam] = useSearchParams();
@@ -85,7 +90,6 @@ function Home() {
           <div className="flex flex-1 w-fit flex-col  lg:border-x-2 sm:border-r-2 p-4">
             <div className=" text-lg h-fit mx-0  border-b-2 mb-3 flex flex-col  sticky top-[64px] z-10 bg-white">
               <div className=" hidden sm:block lg:hidden">
-               
                 <Button
                   variant="ghost"
                   onClick={() => {
@@ -102,15 +106,29 @@ function Home() {
                   : "Latest Products"}
 
                 {isGrid ? (
-                  <CiGrid2H
-                    className="text-xl"
-                    onClick={() => setIsGrid((prev) => !prev)}
-                  />
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <CiGrid2H
+                        className="text-xl"
+                        onClick={() => setIsGrid((prev) => !prev)}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>switch to list view</p>
+                    </TooltipContent>
+                  </Tooltip>
                 ) : (
-                  <BsGrid
-                    className="text-xl"
-                    onClick={() => setIsGrid((prev) => !prev)}
-                  />
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <BsGrid
+                        className="text-xl"
+                        onClick={() => setIsGrid((prev) => !prev)}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>switch to grid view</p>
+                    </TooltipContent>
+                  </Tooltip>
                 )}
               </div>
             </div>
