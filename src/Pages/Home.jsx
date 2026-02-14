@@ -219,7 +219,7 @@ function Home() {
                 </NavLink>
               </div>
               <p className="mt-6 text-[10px] text-gray-400">
-                © 2026 Hamrobazar Clone. All rights reserved.
+                © 2026 ShopByte. All rights reserved.
               </p>
             </div>
           </div>

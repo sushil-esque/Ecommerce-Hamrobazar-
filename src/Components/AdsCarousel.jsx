@@ -27,21 +27,21 @@ function AdsCarousel() {
         <CarouselContent className="m-0">
           <CarouselItem className="pl-0 w-full">
             <img
-              src="/public/ad1.png"
+              src="/ad1.png"
               className="w-full h-auto aspect-[3/1] object-cover"
               alt="Ad 1"
             />
           </CarouselItem>
           <CarouselItem className="pl-0 w-full">
             <img
-              src="/public/ad2.png"
+              src="/ad2.png"
               className="w-full h-auto aspect-[3/1] object-cover"
               alt="Ad 2"
             />
           </CarouselItem>
           <CarouselItem className="pl-0 w-full">
             <img
-              src="/public/ad3.jpg"
+              src="/ad3.jpg"
               className="w-full h-auto aspect-[3/1] object-cover"
               alt="Ad 3"
             />

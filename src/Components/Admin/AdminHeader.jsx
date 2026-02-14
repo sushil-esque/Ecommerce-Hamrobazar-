@@ -53,12 +53,12 @@ function AdminHeader() {
               <picture>
                 {/* Small screen logo */}
                 <source
-                  srcSet="/public/sBsmall.png"
+                  srcSet="/sBsmall.png"
                   media="(max-width: 640px)"
                 />
                 {/* Default logo */}
                 <img
-                  src="/public/shopBytelogo.png"
+                  src="/shopBytelogo.png"
                   alt="logo"
                   className="w-10 h-10 object-contain sm:w-48 sm:h-12"
                 />
