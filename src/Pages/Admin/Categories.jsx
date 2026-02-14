@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/Components/ui/alert-dialog";
 import { Button } from "@/Components/ui/button";
 import {
   Card,
@@ -24,7 +24,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/Components/ui/card";
 import {
   Field,
   FieldError,
@@ -36,7 +36,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/Components/ui/popover";
 import { Spinner } from "@/Components/ui/spinner";
 import { categorySchema } from "@/schemas/category.schema";
 import { zodResolver } from "@hookform/resolvers/zod";

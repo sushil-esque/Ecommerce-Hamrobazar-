@@ -6,7 +6,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@/Components/ui/breadcrumb";
 import { Button } from "@/Components/ui/button";
 import { Spinner } from "@/Components/ui/spinner";
 import useAuthStore from "@/store/useAuthStore";
@@ -18,7 +18,7 @@ import { useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/Components/ui/separator";
 
 const EmptyCart = () => {
   const navigate = useNavigate();

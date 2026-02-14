@@ -18,7 +18,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 import { toast } from "sonner";
 import { ShoppingBag } from "lucide-react";
 import { OrderDetailsDialog } from "@/Components/Admin/OrderDetailsDialog";

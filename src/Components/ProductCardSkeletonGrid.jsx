@@ -1,5 +1,4 @@
 import { Skeleton } from "./ui/skeleton";
-import { Separator } from "@radix-ui/react-select";
 
 function ProductCardSkeletonGrid() {
   return (

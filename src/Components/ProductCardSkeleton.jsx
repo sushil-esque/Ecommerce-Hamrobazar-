@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/Components/ui/skeleton";
+import { Separator } from "@/Components/ui/separator";
 
 function ProductCardSkeleton() {
   return (

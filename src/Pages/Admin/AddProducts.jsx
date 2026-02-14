@@ -8,7 +8,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/Components/ui/card";
 import {
   Field,
   FieldContent,
@@ -18,7 +18,7 @@ import {
   FieldLabel,
   FieldLegend,
   FieldSet,
-} from "@/components/ui/field";
+} from "@/Components/ui/field";
 import { Input } from "@/Components/ui/input";
 import {
   InputGroup,

@@ -1,37 +1,28 @@
-import { FaBell, FaHome, FaPlusSquare, FaUser } from "react-icons/fa";
-import {
-  FaBellConcierge,
-  FaHouse,
-  FaHouseSignal,
-  FaMessage,
-  FaSquarePlus,
-  FaChevronRight,
-} from "react-icons/fa6";
-import { BiMessageMinus } from "react-icons/bi";
-import { VscBell } from "react-icons/vsc";
-import { BiSolidUserCircle } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
-import { TbCategory2 } from "react-icons/tb";
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
-  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Button } from "./ui/button";
+  DrawerTrigger
+} from "@/Components/ui/drawer";
 import { useCategories } from "@/hooks/useCategories";
-import { NavLink } from "react-router-dom";
-import { Separator } from "./ui/separator";
-import { UserRound } from "lucide-react";
-import useAuthStore from "@/store/useAuthStore";
 import { useLogout } from "@/hooks/useLogout";
-import { PiShoppingCartSimpleFill } from "react-icons/pi";
-import { Badge } from "./ui/badge";
+import useAuthStore from "@/store/useAuthStore";
 import { useCartStore } from "@/store/useCartStore";
+import { UserRound } from "lucide-react";
+import { BiSolidUserCircle } from "react-icons/bi";
+import {
+  FaChevronRight,
+  FaHouse
+} from "react-icons/fa6";
+import { PiShoppingCartSimpleFill } from "react-icons/pi";
+import { TbCategory2 } from "react-icons/tb";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 
 function BottomNavBar() {
   const navigate = useNavigate();

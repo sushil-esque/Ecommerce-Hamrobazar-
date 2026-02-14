@@ -13,9 +13,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/Components/ui/alert-dialog";
 import { Button } from "@/Components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import { Spinner } from "@/Components/ui/spinner";
 import {
   keepPreviousData,
   useMutation,
