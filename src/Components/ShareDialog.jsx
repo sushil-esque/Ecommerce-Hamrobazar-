@@ -58,7 +58,7 @@ function ShareDialog({ product, children }) {
                 >
                   <FaFacebook size={28} />
                 </a>
-                <a
+                {/* <a
                   href={shareLinks.messenger}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -66,7 +66,7 @@ function ShareDialog({ product, children }) {
                   title="Share on Messenger"
                 >
                   <FaFacebookMessenger size={28} />
-                </a>
+                </a> */}
               </div>
               <div className="flex w-full items-center gap-2 bg-white p-2 border rounded-lg">
                 <Input
