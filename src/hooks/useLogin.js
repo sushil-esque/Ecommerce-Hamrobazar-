@@ -30,7 +30,7 @@ export const useLogin = () => {
     mutationFn: login,
     onError: (err) => {
       console.error(err);
-      toast.error(err.response?.data?.error || "Login failed");
+      toast.error(err.message || "Login failed");
     },
     onSuccess: (data) => {
       setUser(data.user);
